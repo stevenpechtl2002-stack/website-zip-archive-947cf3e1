@@ -1,4 +1,5 @@
 export { default as Login } from './Login';
+export { default as LandingPage } from './LandingPage';
 export { default as CalendarView } from './CalendarView';
 export { default as ServiceManagement } from './ServiceManagement';
 export { default as StaffManagement } from './StaffManagement';
