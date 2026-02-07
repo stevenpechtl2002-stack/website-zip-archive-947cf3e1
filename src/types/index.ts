@@ -74,4 +74,4 @@ export interface Customer {
 }
 
 export type ViewType = 'calendar' | 'services' | 'staff' | 'insights' | 'settings' | 'customers';
-export type UserRole = 'salon' | 'customer' | 'salon_registration' | null;
+export type UserRole = 'salon' | 'customer' | 'salon_registration' | 'admin' | null;

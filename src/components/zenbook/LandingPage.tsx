@@ -594,24 +594,37 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
 
       {/* Footer */}
       <footer className="py-16 px-6 lg:px-12 border-t border-border bg-card/50">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
-          <motion.div 
-            className="flex items-center gap-3"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-violet-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">
-              Z
-            </div>
-            <span className="text-xl font-black tracking-tight text-foreground">ZenBook<span className="bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">Beauty</span></span>
-          </motion.div>
-          <p className="text-sm text-muted-foreground">© 2026 ZenBook Beauty. Alle Rechte vorbehalten.</p>
-          <motion.button 
-            className="p-3 bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors"
-            whileHover={{ scale: 1.1, rotate: 180 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Moon className="w-5 h-5" />
-          </motion.button>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 mb-8">
+            <motion.div 
+              className="flex items-center gap-3"
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-violet-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">
+                Z
+              </div>
+              <span className="text-xl font-black tracking-tight text-foreground">ZenBook<span className="bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">Beauty</span></span>
+            </motion.div>
+            <p className="text-sm text-muted-foreground">© 2026 ZenBook Beauty. Alle Rechte vorbehalten.</p>
+            <motion.button 
+              className="p-3 bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors"
+              whileHover={{ scale: 1.1, rotate: 180 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Moon className="w-5 h-5" />
+            </motion.button>
+          </div>
+          
+          {/* Admin Login Link */}
+          <div className="pt-6 border-t border-border/50 flex justify-center">
+            <motion.button
+              onClick={() => onLogin('admin')}
+              className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+              whileHover={{ scale: 1.02 }}
+            >
+              Admin Login
+            </motion.button>
+          </div>
         </div>
       </footer>
     </div>

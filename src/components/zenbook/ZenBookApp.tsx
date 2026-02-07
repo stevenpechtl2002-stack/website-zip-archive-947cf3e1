@@ -49,6 +49,7 @@ import {
   CustomerPortal, 
   SalonRegistration 
 } from '@/components/zenbook';
+import { AdminDashboard } from '@/components/zenbook/AdminDashboard';
 import { storageService } from '@/services/storageService';
 import { SERVICES } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
@@ -171,8 +172,26 @@ const ZenBookApp: React.FC = () => {
     );
   }
 
-  // Show auth page if not authenticated
-  if (!isAuthenticated) {
+  // Show landing page if not authenticated and no role selected
+  if (!isAuthenticated && !userRole) {
+    return (
+      <LandingPage 
+        onLogin={(role) => {
+          if (role === 'admin') {
+            setUserRole('admin');
+          } else if (role === 'salon') {
+            setUserRole('salon');
+          } else {
+            setUserRole(role);
+          }
+        }}
+        onStartRegistration={() => setUserRole('salon_registration')}
+      />
+    );
+  }
+
+  // Show auth page for salon/admin login
+  if (!isAuthenticated && (userRole === 'salon' || userRole === 'admin')) {
     return <AuthPage />;
   }
 
@@ -185,13 +204,57 @@ const ZenBookApp: React.FC = () => {
           setStaffMembers(storageService.getStaff()); 
           setUserRole('salon'); 
         }} 
-        onCancel={() => setUserRole('salon')} 
+        onCancel={() => setUserRole(null)} 
       />
     );
   }
   
   if (userRole === 'customer') {
-    return <CustomerPortal onLogout={() => setUserRole('salon')} />;
+    return <CustomerPortal onLogout={() => setUserRole(null)} />;
+  }
+
+  // Admin Dashboard - check if user is admin (specific email)
+  if (userRole === 'admin' && isAuthenticated) {
+    const isAdminUser = user?.email === 'stevenpechtl2002@gmail.com';
+    if (!isAdminUser) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-destructive mb-4">Zugriff verweigert</h1>
+            <p className="text-muted-foreground mb-6">Du hast keine Admin-Berechtigung.</p>
+            <button 
+              onClick={handleLogout}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold"
+            >
+              Zurück
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-violet-600 rounded-xl flex items-center justify-center text-white font-black text-lg">
+                Z
+              </div>
+              <span className="text-xl font-black tracking-tight text-foreground">ZenBook<span className="text-primary">Admin</span></span>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-destructive transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm font-bold">Logout</span>
+            </button>
+          </div>
+          <AdminDashboard />
+        </div>
+      </div>
+    );
   }
 
   return (
