@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, Loader2, CheckCircle } from 'lucide-react';
+import { Mail, Lock, User, Loader2, CheckCircle, Key, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthContext } from './AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SignupFormProps {
   onSwitchToLogin?: () => void;
@@ -16,6 +17,33 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [generatedApiKey, setGeneratedApiKey] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const generateApiKey = async (accessToken: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-api-key`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: 'Voice Agent' }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.api_key;
+      }
+      return null;
+    } catch (err) {
+      console.error('Error generating API key:', err);
+      return null;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,32 +56,84 @@ export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
       return;
     }
 
-    const { error: signUpError } = await signUp(email, password, fullName);
+    const { data, error: signUpError } = await signUp(email, password, fullName);
 
     if (signUpError) {
       setError(signUpError.message);
-    } else {
-      setSuccess(true);
+      setLoading(false);
+      return;
     }
 
+    // If auto-confirm is enabled, we get a session immediately
+    if (data?.session?.access_token) {
+      const apiKey = await generateApiKey(data.session.access_token);
+      if (apiKey) {
+        setGeneratedApiKey(apiKey);
+      }
+    }
+
+    setSuccess(true);
     setLoading(false);
+  };
+
+  const copyApiKey = () => {
+    if (generatedApiKey) {
+      navigator.clipboard.writeText(generatedApiKey);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   if (success) {
     return (
       <div className="w-full max-w-md mx-auto p-8 text-center">
-      <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-        <CheckCircle className="w-8 h-8 text-primary" />
-      </div>
+        <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
+          <CheckCircle className="w-8 h-8 text-primary" />
+        </div>
         <h2 className="text-2xl font-bold text-foreground mb-2">
           Registrierung erfolgreich!
         </h2>
-        <p className="text-muted-foreground mb-6">
-          Bitte überprüfe dein E-Mail-Postfach und bestätige deine E-Mail-Adresse.
-        </p>
+        
+        {generatedApiKey ? (
+          <div className="mt-6 text-left">
+            <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Key className="w-5 h-5 text-emerald-500" />
+                <p className="font-bold text-foreground">Dein API Key wurde erstellt!</p>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                Speichere diesen Key sicher - er wird nur einmal angezeigt.
+              </p>
+              <div className="flex items-center gap-2 p-3 bg-background rounded-lg border">
+                <code className="flex-1 text-xs font-mono break-all text-foreground">
+                  {generatedApiKey}
+                </code>
+                <Button size="sm" variant="ghost" onClick={copyApiKey}>
+                  {copied ? (
+                    <Check className="w-4 h-4 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-muted/50 rounded-xl text-sm text-muted-foreground">
+              <p className="font-semibold text-foreground mb-2">API Base URL:</p>
+              <code className="text-xs font-mono break-all">
+                {import.meta.env.VITE_SUPABASE_URL}/functions/v1/
+              </code>
+            </div>
+          </div>
+        ) : (
+          <p className="text-muted-foreground mb-6">
+            Du kannst dich jetzt anmelden und in den Einstellungen einen API Key erstellen.
+          </p>
+        )}
+
         {onSwitchToLogin && (
-          <Button onClick={onSwitchToLogin} variant="outline">
-            Zurück zum Login
+          <Button onClick={onSwitchToLogin} className="mt-6 w-full">
+            Zum Dashboard
           </Button>
         )}
       </div>
