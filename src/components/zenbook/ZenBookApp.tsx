@@ -18,7 +18,9 @@ import {
   Contact2,
   PanelLeftClose,
   PanelLeftOpen,
-  Wand2
+  Wand2,
+  Key,
+  Loader2
 } from 'lucide-react';
 import { 
   format, 
@@ -49,6 +51,8 @@ import {
 } from '@/components/zenbook';
 import { storageService } from '@/services/storageService';
 import { SERVICES } from '@/constants';
+import { useAuth } from '@/hooks/useAuth';
+import { AuthPage } from '@/components/auth';
 
 const navItems = [
   { id: 'calendar', label: 'Kalender', icon: <CalendarIcon className="w-5 h-5" /> },
@@ -60,6 +64,7 @@ const navItems = [
 ];
 
 const ZenBookApp: React.FC = () => {
+  const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [currentView, setCurrentView] = useState<ViewType>('calendar');
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -72,6 +77,13 @@ const ZenBookApp: React.FC = () => {
   const [showAddDropdown, setShowAddDropdown] = useState(false);
   const [editingAppointmentId, setEditingAppointmentId] = useState<string | null>(null);
   const [apiActivity, setApiActivity] = useState(false);
+
+  // Auto-set userRole when authenticated
+  useEffect(() => {
+    if (isAuthenticated && !userRole) {
+      setUserRole('salon');
+    }
+  }, [isAuthenticated, userRole]);
 
   const [newBooking, setNewBooking] = useState({
     staffId: '',
@@ -145,11 +157,26 @@ const ZenBookApp: React.FC = () => {
     setEditingAppointmentId(null);
   };
 
-  // Login screens
-  if (!userRole) {
-    return <LandingPage onLogin={setUserRole} onStartRegistration={() => setUserRole('salon_registration')} />;
+  const handleLogout = async () => {
+    await signOut();
+    setUserRole(null);
+  };
+
+  // Show loading state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    );
   }
-  
+
+  // Show auth page if not authenticated
+  if (!isAuthenticated) {
+    return <AuthPage />;
+  }
+
+  // Login screens for customer/registration
   if (userRole === 'salon_registration') {
     return (
       <SalonRegistration 
@@ -158,13 +185,13 @@ const ZenBookApp: React.FC = () => {
           setStaffMembers(storageService.getStaff()); 
           setUserRole('salon'); 
         }} 
-        onCancel={() => setUserRole(null)} 
+        onCancel={() => setUserRole('salon')} 
       />
     );
   }
   
   if (userRole === 'customer') {
-    return <CustomerPortal onLogout={() => setUserRole(null)} />;
+    return <CustomerPortal onLogout={() => setUserRole('salon')} />;
   }
 
   return (
@@ -261,8 +288,8 @@ const ZenBookApp: React.FC = () => {
         </div>
 
         <button
-          onClick={() => setUserRole(null)}
-          className={`flex items-center gap-3 p-4 text-slate-400 hover:text-rose-500 transition-colors text-left w-full border-t border-slate-50 pt-6 shrink-0 ${!isSidebarOpen && 'lg:justify-center lg:px-0'}`}
+          onClick={handleLogout}
+          className={`flex items-center gap-3 p-4 text-muted-foreground hover:text-destructive transition-colors text-left w-full border-t border-border pt-6 shrink-0 ${!isSidebarOpen && 'lg:justify-center lg:px-0'}`}
         >
           <LogOut className="w-5 h-5 shrink-0" />
           <span className={`text-xs font-black uppercase tracking-widest transition-all ${!isSidebarOpen && 'hidden'}`}>Logout</span>

@@ -8,16 +8,18 @@ import {
   Code,
   ShieldCheck,
   RefreshCw,
-  Activity,
-  Lock
+  Activity
 } from 'lucide-react';
 import { storageService } from '@/services/storageService';
+import { ApiKeyManagement } from './ApiKeyManagement';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Props {
   onSimulateIncoming: (payload: any) => void;
 }
 
 const Settings: React.FC<Props> = ({ onSimulateIncoming }) => {
+  const { isAuthenticated } = useAuth();
   const [webhookUrl, setWebhookUrl] = useState(localStorage.getItem('zenbook_webhook_url') || '');
   const [saveStatus, setSaveStatus] = useState(false);
   const [dbStats, setDbStats] = useState(storageService.getStats());
@@ -46,10 +48,17 @@ const Settings: React.FC<Props> = ({ onSimulateIncoming }) => {
     <div className="w-full space-y-10 animate-in fade-in duration-500 pb-20">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         
+        {/* API Key Management - Only show when authenticated */}
+        {isAuthenticated && (
+          <div className="xl:col-span-2 bg-card/60 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl card-3d rim-light">
+            <ApiKeyManagement />
+          </div>
+        )}
+
         {/* Database 3D Card */}
         <div className="bg-card/60 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl card-3d flex flex-col rim-light">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 shadow-inner">
+            <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
               <Database className="w-7 h-7" />
             </div>
             <div>
@@ -80,15 +89,15 @@ const Settings: React.FC<Props> = ({ onSimulateIncoming }) => {
           </button>
         </div>
 
-        {/* API 3D Card */}
+        {/* Simulator Card */}
         <div className="bg-card/60 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl card-3d rim-light">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-inner">
-              <Lock className="w-7 h-7" />
+              <Cpu className="w-7 h-7" />
             </div>
             <div>
-              <h4 className="text-2xl font-black text-foreground tracking-tighter">API Schnittstellen</h4>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Auth & Webhooks</p>
+              <h4 className="text-2xl font-black text-foreground tracking-tighter">n8n Simulator</h4>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Test-Events</p>
             </div>
           </div>
 
@@ -107,8 +116,8 @@ const Settings: React.FC<Props> = ({ onSimulateIncoming }) => {
                <div className="flex items-center gap-3">
                   <Cpu className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="text-background text-[10px] font-black uppercase tracking-widest">Simulator</p>
-                    <p className="text-[9px] text-muted">n8n Test-Event</p>
+                    <p className="text-background text-[10px] font-black uppercase tracking-widest">Voice Agent Test</p>
+                    <p className="text-[9px] text-muted">Simuliere eingehenden Anruf</p>
                   </div>
                </div>
                <button 
@@ -138,10 +147,12 @@ const Settings: React.FC<Props> = ({ onSimulateIncoming }) => {
               <div className="bg-background/10 rounded-xl p-6 border border-background/5 shadow-inner">
                 <pre className="font-mono text-[10px] text-muted leading-relaxed overflow-x-auto">
 {`{
-  "customer": "Sarah L.",
-  "service": "Balayage",
-  "staff": "Sarah M.",
-  "time": "${new Date().toISOString()}"
+  "customer_name": "Sarah L.",
+  "customer_phone": "+49 171 123456",
+  "date": "2025-02-07",
+  "time": "14:00",
+  "staff_id": "uuid",
+  "product_id": "uuid"
 }`}
                 </pre>
               </div>
@@ -149,10 +160,10 @@ const Settings: React.FC<Props> = ({ onSimulateIncoming }) => {
 
             <div className="grid grid-cols-2 gap-4">
                {[
-                 { icon: <ShieldCheck className="w-6 h-6 text-emerald-400" />, label: 'Auth', desc: 'Secure Headers' },
-                 { icon: <RefreshCw className="w-6 h-6 text-primary" />, label: 'Sync', desc: 'Realtime Push' },
-                 { icon: <Activity className="w-6 h-6 text-amber-400" />, label: 'Logs', desc: 'Status-Monitor' },
-                 { icon: <Code className="w-6 h-6 text-purple-400" />, label: 'SDK', desc: 'Custom Ready' }
+                 { icon: <ShieldCheck className="w-6 h-6 text-primary" />, label: 'Auth', desc: 'API-Key Header' },
+                 { icon: <RefreshCw className="w-6 h-6 text-primary" />, label: 'Realtime', desc: 'Live-Updates' },
+                 { icon: <Activity className="w-6 h-6 text-primary" />, label: 'Logs', desc: 'Status-Monitor' },
+                 { icon: <Code className="w-6 h-6 text-primary" />, label: 'REST', desc: 'JSON API' }
                ].map((item, i) => (
                  <div key={i} className="p-5 bg-background/5 rounded-xl border border-background/5 flex flex-col justify-between group hover:bg-background/10 transition-all cursor-default">
                     {item.icon}
@@ -187,7 +198,7 @@ const Settings: React.FC<Props> = ({ onSimulateIncoming }) => {
               />
               <button 
                 onClick={handleSaveWebhook}
-                className={`w-full py-4 rounded-xl font-black text-xs transition-all shadow-lg ${saveStatus ? 'bg-emerald-500 text-white' : 'bg-background text-primary hover:scale-[1.02]'}`}
+                className={`w-full py-4 rounded-xl font-black text-xs transition-all shadow-lg ${saveStatus ? 'bg-background text-primary' : 'bg-background text-primary hover:scale-[1.02]'}`}
               >
                 {saveStatus ? 'Gespeichert!' : 'Konfiguration sichern'}
               </button>
