@@ -49,6 +49,7 @@ import {
   CustomerPortal, 
   SalonRegistration 
 } from '@/components/zenbook';
+import { AdminDashboard } from '@/components/zenbook/AdminDashboard';
 import { storageService } from '@/services/storageService';
 import { SERVICES } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
