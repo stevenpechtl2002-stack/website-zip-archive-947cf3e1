@@ -37,7 +37,7 @@ import {
 import { de } from 'date-fns/locale';
 import { ViewType, Appointment, AppointmentStatus, Staff, Service, UserRole } from '@/types';
 import { 
-  Login, 
+  LandingPage,
   CalendarView, 
   ServiceManagement, 
   StaffManagement, 
@@ -147,7 +147,7 @@ const ZenBookApp: React.FC = () => {
 
   // Login screens
   if (!userRole) {
-    return <Login onLogin={setUserRole} onStartRegistration={() => setUserRole('salon_registration')} />;
+    return <LandingPage onLogin={setUserRole} onStartRegistration={() => setUserRole('salon_registration')} />;
   }
   
   if (userRole === 'salon_registration') {
