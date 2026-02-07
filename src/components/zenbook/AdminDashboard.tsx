@@ -9,10 +9,18 @@ import {
   ExternalLink,
   Loader2,
   Shield,
-  RefreshCw
+  RefreshCw,
+  Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface SalonData {
   id: string;
@@ -35,6 +43,8 @@ export function AdminDashboard() {
   const [salons, setSalons] = useState<SalonData[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [generatingFor, setGeneratingFor] = useState<string | null>(null);
+  const [newKeyDialog, setNewKeyDialog] = useState<{ open: boolean; salonName: string; apiKey: string } | null>(null);
   const { toast } = useToast();
 
   const fetchSalons = async () => {
@@ -71,6 +81,60 @@ export function AdminDashboard() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generateApiKeyForSalon = async (salonId: string, salonName: string) => {
+    setGeneratingFor(salonId);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/generate-api-key-admin`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionData.session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            user_id: salonId,
+            name: 'Voice Agent' 
+          }),
+        }
+      );
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate API key');
+      }
+
+      setNewKeyDialog({
+        open: true,
+        salonName: salonName || 'Salon',
+        apiKey: data.api_key
+      });
+
+      // Refresh the list
+      await fetchSalons();
+
+      toast({
+        title: 'API Key erstellt',
+        description: `API Key für ${salonName || 'Salon'} wurde erstellt`,
+      });
+    } catch (error: any) {
+      console.error('Error generating API key:', error);
+      toast({
+        title: 'Fehler',
+        description: error.message || 'Konnte API Key nicht erstellen',
+        variant: 'destructive'
+      });
+    } finally {
+      setGeneratingFor(null);
     }
   };
 
@@ -226,9 +290,25 @@ export function AdminDashboard() {
 
                   {/* API Keys */}
                   <div className="flex-1">
-                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
-                      API Keys ({salon.api_keys.length})
-                    </p>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        API Keys ({salon.api_keys.length})
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1"
+                        onClick={() => generateApiKeyForSalon(salon.id, salon.full_name || salon.email || 'Salon')}
+                        disabled={generatingFor === salon.id}
+                      >
+                        {generatingFor === salon.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Plus className="w-3 h-3" />
+                        )}
+                        <span className="text-xs">Key erstellen</span>
+                      </Button>
+                    </div>
                     {salon.api_keys.length === 0 ? (
                       <p className="text-sm text-muted-foreground italic">Keine API Keys erstellt</p>
                     ) : (
@@ -290,6 +370,51 @@ export function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* New API Key Dialog */}
+      <Dialog open={newKeyDialog?.open || false} onOpenChange={(open) => !open && setNewKeyDialog(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Key className="w-5 h-5 text-emerald-500" />
+              API Key erstellt
+            </DialogTitle>
+            <DialogDescription>
+              API Key für {newKeyDialog?.salonName} wurde erstellt.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+              <p className="text-sm font-semibold text-amber-600 mb-1">⚠️ Wichtig!</p>
+              <p className="text-xs text-muted-foreground">
+                Dieser Key wird nur einmal angezeigt. Kopiere ihn jetzt und speichere ihn sicher.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 p-3 bg-muted rounded-xl">
+              <code className="flex-1 text-xs font-mono break-all text-foreground">
+                {newKeyDialog?.apiKey}
+              </code>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  if (newKeyDialog?.apiKey) {
+                    navigator.clipboard.writeText(newKeyDialog.apiKey);
+                    setCopiedId('new-key');
+                    setTimeout(() => setCopiedId(null), 2000);
+                  }
+                }}
+              >
+                {copiedId === 'new-key' ? (
+                  <Check className="w-4 h-4 text-emerald-500" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
