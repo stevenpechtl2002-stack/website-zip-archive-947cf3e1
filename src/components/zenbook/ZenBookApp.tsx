@@ -170,75 +170,15 @@ const ZenBookApp: React.FC = () => {
   return (
     <div className="flex h-screen overflow-hidden p-4 gap-6 relative">
       {/* 3D Floating Sidebar */}
-      <aside className={`fixed lg:relative h-[calc(100vh-2rem)] z-50 flex flex-col gap-4 shrink-0 floating-3d rounded-[2.5rem] p-6 no-scrollbar transition-all duration-500 ease-in-out ${isSidebarOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:w-20 lg:translate-x-0 lg:p-3 overflow-hidden'}`}>
-        <div className={`flex items-center gap-3 mb-8 transition-opacity duration-300 ${!isSidebarOpen && 'lg:opacity-0'}`}>
+      <aside className={`fixed lg:relative h-[calc(100vh-2rem)] z-50 flex flex-col gap-4 shrink-0 floating-3d rounded-[2.5rem] p-6 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:w-20 lg:translate-x-0 lg:p-3 overflow-hidden'}`}>
+        <div className={`flex items-center gap-3 mb-4 transition-opacity duration-300 ${!isSidebarOpen && 'lg:opacity-0'}`}>
           <div className="w-10 h-10 bg-indigo-50 border border-slate-200 rounded-xl flex items-center justify-center text-indigo-600 font-black text-xl shadow-sm">
             Z
           </div>
           <h1 className={`text-xl font-black tracking-tighter text-slate-800 truncate ${!isSidebarOpen && 'hidden'}`}>ZenBook</h1>
         </div>
 
-        <nav className="flex flex-col gap-2 flex-1">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setCurrentView(item.id as ViewType)}
-              className={`flex items-center gap-3 px-5 py-4 rounded-xl transition-all font-bold text-sm group relative ${
-                currentView === item.id 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' 
-                  : 'text-slate-400 hover:text-indigo-600 hover:bg-slate-50'
-              }`}
-            >
-              <span className="shrink-0">{React.cloneElement(item.icon as React.ReactElement<any>, { className: 'w-5 h-5' })}</span>
-              <span className={`transition-all duration-300 ${!isSidebarOpen && 'lg:opacity-0 lg:w-0 overflow-hidden'}`}>{item.label}</span>
-              {!isSidebarOpen && (
-                <div className="absolute left-full ml-4 px-2 py-1 bg-slate-900 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
-                  {item.label}
-                </div>
-              )}
-            </button>
-          ))}
-        </nav>
-
-        <div className={`transition-all duration-300 ${!isSidebarOpen && 'lg:scale-0 lg:h-0 overflow-hidden'}`}>
-          <div className={`p-4 rounded-[1.5rem] bg-slate-50 border border-slate-100 text-slate-500 mb-4 transition-all duration-700 ${apiActivity ? 'bg-emerald-50 border-emerald-100' : ''}`}>
-            <div className="flex items-center gap-3">
-              <Radio className={`w-4 h-4 ${apiActivity ? 'animate-pulse text-emerald-500' : 'text-slate-400'}`} />
-              <div className="flex-1 overflow-hidden">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">API Gateway</p>
-                <p className="text-xs font-bold text-slate-600 truncate">{apiActivity ? 'Requesting...' : 'Listening Mode'}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative mb-6">
-            <button 
-              onClick={() => setShowAddDropdown(!showAddDropdown)}
-              className="w-full flex items-center justify-between px-6 py-5 bg-slate-900 text-white rounded-[1.5rem] font-black shadow-xl hover:bg-slate-800 transition-all active:scale-95"
-            >
-              <div className="flex items-center gap-3">
-                <Plus className="w-5 h-5" />
-                <span className="text-sm">Neu</span>
-              </div>
-              <ChevronDown className={`w-4 h-4 transition-transform ${showAddDropdown ? 'rotate-180' : ''}`} />
-            </button>
-            {showAddDropdown && (
-              <div className="absolute bottom-full left-0 right-0 mb-3 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 py-2 animate-in slide-in-from-bottom-2">
-                <button onClick={() => { setModalType('appointment'); setShowAddDropdown(false); }} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
-                  <CalendarIcon className="w-4 h-4" /> Termin
-                </button>
-                <button onClick={() => { setModalType('block'); setShowAddDropdown(false); }} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
-                  <ShieldAlert className="w-4 h-4" /> Pause
-                </button>
-                <button onClick={() => setShowAddDropdown(false)} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-indigo-600 hover:bg-indigo-50">
-                  <Sparkles className="w-4 h-4" /> KI-Buchung
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Small Calendar at Bottom of Sidebar */}
+        {/* Small Calendar - Now at top above navigation */}
         <div className={`mb-4 transition-all duration-300 ${!isSidebarOpen && 'lg:scale-0 lg:h-0 overflow-hidden'}`}>
            <div className="flex items-center justify-between px-2 mb-3">
              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{format(currentMonth, 'MMMM yyyy', { locale: de })}</span>
@@ -259,9 +199,70 @@ const ZenBookApp: React.FC = () => {
            </div>
         </div>
 
-        <button 
+        {/* Scrollable Navigation Menu */}
+        <nav className="flex flex-col gap-2 flex-1 overflow-y-auto no-scrollbar">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setCurrentView(item.id as ViewType)}
+              className={`flex items-center gap-3 px-5 py-4 rounded-xl transition-all font-bold text-sm group relative shrink-0 ${
+                currentView === item.id 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' 
+                  : 'text-slate-400 hover:text-indigo-600 hover:bg-slate-50'
+              }`}
+            >
+              <span className="shrink-0">{React.cloneElement(item.icon as React.ReactElement<any>, { className: 'w-5 h-5' })}</span>
+              <span className={`transition-all duration-300 ${!isSidebarOpen && 'lg:opacity-0 lg:w-0 overflow-hidden'}`}>{item.label}</span>
+              {!isSidebarOpen && (
+                <div className="absolute left-full ml-4 px-2 py-1 bg-slate-900 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+                  {item.label}
+                </div>
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className={`transition-all duration-300 shrink-0 ${!isSidebarOpen && 'lg:scale-0 lg:h-0 overflow-hidden'}`}>
+          <div className={`p-4 rounded-[1.5rem] bg-slate-50 border border-slate-100 text-slate-500 mb-4 transition-all duration-700 ${apiActivity ? 'bg-emerald-50 border-emerald-100' : ''}`}>
+            <div className="flex items-center gap-3">
+              <Radio className={`w-4 h-4 ${apiActivity ? 'animate-pulse text-emerald-500' : 'text-slate-400'}`} />
+              <div className="flex-1 overflow-hidden">
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">API Gateway</p>
+                <p className="text-xs font-bold text-slate-600 truncate">{apiActivity ? 'Requesting...' : 'Listening Mode'}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative mb-4">
+            <button 
+              onClick={() => setShowAddDropdown(!showAddDropdown)}
+              className="w-full flex items-center justify-between px-6 py-5 bg-slate-900 text-white rounded-[1.5rem] font-black shadow-xl hover:bg-slate-800 transition-all active:scale-95"
+            >
+              <div className="flex items-center gap-3">
+                <Plus className="w-5 h-5" />
+                <span className="text-sm">Neu</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 transition-transform ${showAddDropdown ? 'rotate-180' : ''}`} />
+            </button>
+            {showAddDropdown && (
+              <div className="absolute bottom-full left-0 right-0 mb-3 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[60] py-2 animate-in slide-in-from-bottom-2">
+                <button onClick={() => { setModalType('appointment'); setShowAddDropdown(false); }} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
+                  <CalendarIcon className="w-4 h-4" /> Termin
+                </button>
+                <button onClick={() => { setModalType('block'); setShowAddDropdown(false); }} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
+                  <ShieldAlert className="w-4 h-4" /> Pause
+                </button>
+                <button onClick={() => setShowAddDropdown(false)} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-indigo-600 hover:bg-indigo-50">
+                  <Sparkles className="w-4 h-4" /> KI-Buchung
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <button
           onClick={() => setUserRole(null)}
-          className={`flex items-center gap-3 p-4 text-slate-400 hover:text-rose-500 transition-colors text-left w-full border-t border-slate-50 pt-6 ${!isSidebarOpen && 'lg:justify-center lg:px-0'}`}
+          className={`flex items-center gap-3 p-4 text-slate-400 hover:text-rose-500 transition-colors text-left w-full border-t border-slate-50 pt-6 shrink-0 ${!isSidebarOpen && 'lg:justify-center lg:px-0'}`}
         >
           <LogOut className="w-5 h-5 shrink-0" />
           <span className={`text-xs font-black uppercase tracking-widest transition-all ${!isSidebarOpen && 'hidden'}`}>Logout</span>
