@@ -50,6 +50,7 @@ import {
   SalonRegistration 
 } from '@/components/zenbook';
 import { AdminDashboard } from '@/components/zenbook/AdminDashboard';
+import Logo from '@/components/zenbook/Logo';
 import { useAuth } from '@/hooks/useAuth';
 import { useStaffMembers } from '@/hooks/useStaffMembers';
 import { useProducts } from '@/hooks/useProducts';
@@ -278,12 +279,7 @@ const ZenBookApp: React.FC = () => {
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-violet-600 rounded-xl flex items-center justify-center text-white font-black text-lg">
-                Z
-              </div>
-              <span className="text-xl font-black tracking-tight text-foreground">ZenBook<span className="text-primary">Admin</span></span>
-            </div>
+            <Logo variant="admin" onClick={() => { handleLogout(); setUserRole(null); }} />
             <button 
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-destructive transition-colors"
@@ -303,10 +299,7 @@ const ZenBookApp: React.FC = () => {
       {/* 3D Floating Sidebar */}
       <aside className={`fixed lg:relative h-[calc(100vh-2rem)] z-50 flex flex-col gap-4 shrink-0 floating-3d rounded-[2.5rem] p-6 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:w-20 lg:translate-x-0 lg:p-3 overflow-hidden'}`}>
         <div className={`flex items-center gap-3 mb-4 transition-opacity duration-300 ${!isSidebarOpen && 'lg:opacity-0'}`}>
-          <div className="w-10 h-10 bg-indigo-50 border border-slate-200 rounded-xl flex items-center justify-center text-indigo-600 font-black text-xl shadow-sm">
-            Z
-          </div>
-          <h1 className={`text-xl font-black tracking-tighter text-slate-800 truncate ${!isSidebarOpen && 'hidden'}`}>ZenBook</h1>
+          <Logo onClick={() => { handleLogout(); setUserRole(null); }} showText={isSidebarOpen} />
         </div>
 
         {/* Small Calendar - Now at top above navigation */}
