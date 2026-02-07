@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { UserRole } from '@/types';
 import { Search, MapPin, ArrowRight, ChevronDown, Moon, Star, Clock, Sparkles, Heart, Play, Check } from 'lucide-react';
+import Logo from './Logo';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 
 interface Props {
@@ -87,15 +88,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
         className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-2xl border-b border-border/30"
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
-          <motion.div 
-            className="flex items-center gap-3"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="w-12 h-12 bg-gradient-to-br from-primary via-violet-500 to-pink-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/30">
-              Z
-            </div>
-            <span className="text-2xl font-black tracking-tight text-foreground">ZenBook<span className="bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">Beauty</span></span>
-          </motion.div>
+          <Logo variant="light" />
           
           <nav className="flex items-center gap-8">
             <motion.button 
