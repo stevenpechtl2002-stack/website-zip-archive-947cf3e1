@@ -10,7 +10,13 @@ import {
 import { de } from 'date-fns/locale';
 import { SERVICES, BUSINESS_HOURS } from '@/constants';
 import { Appointment, Staff } from '@/types';
-import { Plus, ChevronLeft, ChevronRight, LayoutGrid, CalendarDays, Clock } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, LayoutGrid, CalendarDays, Clock, Settings2, Minus } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
 
 interface Props {
   appointments: Appointment[];
@@ -22,6 +28,10 @@ interface Props {
   onSlotClick: (staffId: string, hour: number) => void;
 }
 
+// Time interval options in minutes
+const TIME_INTERVALS = [15, 30, 60] as const;
+type TimeInterval = typeof TIME_INTERVALS[number];
+
 const CalendarView: React.FC<Props> = ({ 
   appointments, 
   selectedDate, 
@@ -30,11 +40,31 @@ const CalendarView: React.FC<Props> = ({
   staff,
   onSlotClick
 }) => {
-  const hours = Array.from({ length: BUSINESS_HOURS.end - BUSINESS_HOURS.start }, (_, i) => i + BUSINESS_HOURS.start);
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
   const [selectedStaffId] = useState<string>(staff[0]?.id || '');
   const [isSwiping, setIsSwiping] = useState(false);
   const touchStartRef = useRef<number | null>(null);
+  
+  // Customizable settings
+  const [rowHeight, setRowHeight] = useState(112); // Default row height in pixels
+  const [timeInterval, setTimeInterval] = useState<TimeInterval>(60); // Default 60 min intervals
+  
+  // Generate time slots based on interval
+  const generateTimeSlots = () => {
+    const slots = [];
+    const slotsPerHour = 60 / timeInterval;
+    const totalSlots = (BUSINESS_HOURS.end - BUSINESS_HOURS.start) * slotsPerHour;
+    
+    for (let i = 0; i < totalSlots; i++) {
+      const hour = BUSINESS_HOURS.start + Math.floor(i / slotsPerHour);
+      const minute = (i % slotsPerHour) * timeInterval;
+      slots.push({ hour, minute, label: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}` });
+    }
+    return slots;
+  };
+  
+  const timeSlots = generateTimeSlots();
+  const slotHeight = rowHeight / (60 / timeInterval); // Height per slot
 
   const weekDays = eachDayOfInterval({
     start: startOfWeek(selectedDate, { locale: de }),
@@ -63,13 +93,15 @@ const CalendarView: React.FC<Props> = ({
     touchStartRef.current = null;
   };
 
+  const totalHeight = timeSlots.length * slotHeight;
+
   return (
     <div 
       className={`h-full flex flex-col transition-all duration-300 ${isSwiping ? 'opacity-50 scale-[0.995]' : 'opacity-100'}`}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Refined Calendar Header matching screenshot */}
+      {/* Calendar Header */}
       <div className="mb-10 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-8">
           <h3 className="text-4xl font-black text-foreground tracking-tighter">
@@ -83,6 +115,7 @@ const CalendarView: React.FC<Props> = ({
         </div>
         
         <div className="flex items-center gap-4">
+          {/* View Mode Toggle */}
           <div className="bg-muted p-1.5 rounded-[1.2rem] flex border border-border shadow-sm">
             <button onClick={() => setViewMode('day')} className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black transition-all ${viewMode === 'day' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
               <LayoutGrid className="w-4 h-4" /> TAG
@@ -91,12 +124,113 @@ const CalendarView: React.FC<Props> = ({
               <CalendarDays className="w-4 h-4" /> WOCHE
             </button>
           </div>
+
+          {/* Settings Popover */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="p-3 bg-muted hover:bg-card rounded-xl border border-border shadow-sm text-muted-foreground hover:text-foreground transition-all">
+                <Settings2 className="w-4 h-4" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-6 bg-card border border-border rounded-2xl shadow-2xl" align="end">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-sm font-black text-foreground mb-1">Kalender Einstellungen</h4>
+                  <p className="text-xs text-muted-foreground">Passe die Ansicht an deine Bedürfnisse an.</p>
+                </div>
+
+                {/* Row Height Slider */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Zeilenhöhe</label>
+                    <span className="text-xs font-black text-primary">{rowHeight}px</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={() => setRowHeight(Math.max(60, rowHeight - 10))}
+                      className="p-2 bg-muted rounded-lg hover:bg-primary/10 transition-colors"
+                    >
+                      <Minus className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                    <Slider
+                      value={[rowHeight]}
+                      onValueChange={(value) => setRowHeight(value[0])}
+                      min={60}
+                      max={200}
+                      step={10}
+                      className="flex-1"
+                    />
+                    <button 
+                      onClick={() => setRowHeight(Math.min(200, rowHeight + 10))}
+                      className="p-2 bg-muted rounded-lg hover:bg-primary/10 transition-colors"
+                    >
+                      <Plus className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Time Interval Selection */}
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Zeitabschnitte</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {TIME_INTERVALS.map((interval) => (
+                      <button
+                        key={interval}
+                        onClick={() => setTimeInterval(interval)}
+                        className={`py-3 px-4 rounded-xl text-xs font-black transition-all ${
+                          timeInterval === interval 
+                            ? 'bg-primary text-primary-foreground shadow-lg' 
+                            : 'bg-muted text-muted-foreground hover:bg-card hover:text-foreground border border-border'
+                        }`}
+                      >
+                        {interval} min
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="space-y-3 pt-4 border-t border-border">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Schnellauswahl</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => { setRowHeight(80); setTimeInterval(30); }}
+                      className="py-3 px-4 rounded-xl text-xs font-bold bg-muted text-muted-foreground hover:bg-card hover:text-foreground border border-border transition-all"
+                    >
+                      Kompakt
+                    </button>
+                    <button
+                      onClick={() => { setRowHeight(112); setTimeInterval(60); }}
+                      className="py-3 px-4 rounded-xl text-xs font-bold bg-muted text-muted-foreground hover:bg-card hover:text-foreground border border-border transition-all"
+                    >
+                      Standard
+                    </button>
+                    <button
+                      onClick={() => { setRowHeight(140); setTimeInterval(30); }}
+                      className="py-3 px-4 rounded-xl text-xs font-bold bg-muted text-muted-foreground hover:bg-card hover:text-foreground border border-border transition-all"
+                    >
+                      Komfortabel
+                    </button>
+                    <button
+                      onClick={() => { setRowHeight(60); setTimeInterval(15); }}
+                      className="py-3 px-4 rounded-xl text-xs font-bold bg-muted text-muted-foreground hover:bg-card hover:text-foreground border border-border transition-all"
+                    >
+                      Detailliert
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
       <div className="flex-1 bg-card border border-border rounded-[2rem] overflow-hidden flex flex-col shadow-sm relative">
+        {/* Header Row */}
         <div className="flex border-b border-border bg-card sticky top-0 z-20 h-20 items-center">
-          <div className="w-20 border-r border-border shrink-0"></div>
+          <div className="w-20 border-r border-border shrink-0 flex items-center justify-center">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+          </div>
           {viewMode === 'day' ? (
             staff.map(person => (
               <div key={person.id} className="flex-1 px-6 flex items-center gap-4 border-r border-border last:border-r-0 min-w-[150px]">
@@ -116,37 +250,72 @@ const CalendarView: React.FC<Props> = ({
           )}
         </div>
 
+        {/* Scrollable Time Grid */}
         <div className="flex-1 overflow-y-auto relative no-scrollbar">
-          <div className="flex min-h-[1000px]">
+          <div className="flex" style={{ minHeight: `${totalHeight}px` }}>
+            {/* Time Labels Column */}
             <div className="w-20 border-r border-border bg-card/30 shrink-0">
-              {hours.map(hour => (
-                <div key={hour} className="h-28 px-4 pt-6 text-[10px] font-black text-muted-foreground text-right pr-6">{hour}:00</div>
+              {timeSlots.map((slot, idx) => (
+                <div 
+                  key={`${slot.hour}-${slot.minute}`} 
+                  className="px-4 text-[10px] font-black text-muted-foreground text-right pr-6 flex items-start pt-2"
+                  style={{ height: `${slotHeight}px` }}
+                >
+                  {slot.minute === 0 || timeInterval < 60 ? slot.label : ''}
+                </div>
               ))}
             </div>
 
+            {/* Staff/Day Columns */}
             {viewMode === 'day' ? (
               staff.map(person => (
                 <div key={person.id} className="flex-1 relative border-r border-border last:border-r-0 min-w-[150px]">
-                  {hours.map(hour => (
-                    <div key={hour} onClick={() => onSlotClick(person.id, hour)} className="h-28 border-b border-border/50 hover:bg-muted/20 transition-colors cursor-pointer group flex items-start justify-center pt-6">
-                       <Plus className="w-5 h-5 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {timeSlots.map((slot) => (
+                    <div 
+                      key={`${slot.hour}-${slot.minute}`} 
+                      onClick={() => onSlotClick(person.id, slot.hour + slot.minute / 60)}
+                      className={`border-b hover:bg-muted/30 transition-colors cursor-pointer group flex items-start justify-center pt-2 ${
+                        slot.minute === 0 ? 'border-border/80' : 'border-border/30'
+                      }`}
+                      style={{ height: `${slotHeight}px` }}
+                    >
+                      <Plus className="w-4 h-4 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   ))}
                   {appointments.filter(a => a.staffId === person.id && isSameDay(a.startTime, selectedDate)).map(app => (
-                    <AppointmentCard key={app.id} app={app} onEdit={onUpdateAppointment} cellHeight={112} />
+                    <AppointmentCard 
+                      key={app.id} 
+                      app={app} 
+                      onEdit={onUpdateAppointment} 
+                      slotHeight={slotHeight}
+                      timeInterval={timeInterval}
+                    />
                   ))}
                 </div>
               ))
             ) : (
               weekDays.map(day => (
                 <div key={day.toString()} className="flex-1 relative border-r border-border last:border-r-0 min-w-[100px]">
-                  {hours.map(hour => (
-                    <div key={hour} onClick={() => onSlotClick(selectedStaffId, hour)} className="h-28 border-b border-border/50 hover:bg-muted/20 transition-colors cursor-pointer group flex items-start justify-center pt-6">
-                       <Plus className="w-5 h-5 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {timeSlots.map((slot) => (
+                    <div 
+                      key={`${slot.hour}-${slot.minute}`} 
+                      onClick={() => onSlotClick(selectedStaffId, slot.hour + slot.minute / 60)}
+                      className={`border-b hover:bg-muted/30 transition-colors cursor-pointer group flex items-start justify-center pt-2 ${
+                        slot.minute === 0 ? 'border-border/80' : 'border-border/30'
+                      }`}
+                      style={{ height: `${slotHeight}px` }}
+                    >
+                      <Plus className="w-4 h-4 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   ))}
                   {appointments.filter(a => a.staffId === selectedStaffId && isSameDay(a.startTime, day)).map(app => (
-                    <AppointmentCard key={app.id} app={app} onEdit={onUpdateAppointment} cellHeight={112} />
+                    <AppointmentCard 
+                      key={app.id} 
+                      app={app} 
+                      onEdit={onUpdateAppointment} 
+                      slotHeight={slotHeight}
+                      timeInterval={timeInterval}
+                    />
                   ))}
                 </div>
               ))
@@ -158,30 +327,40 @@ const CalendarView: React.FC<Props> = ({
   );
 };
 
-const AppointmentCard: React.FC<{ app: Appointment, onEdit: (app: Appointment) => void, cellHeight: number }> = ({ app, onEdit, cellHeight }) => {
+interface AppointmentCardProps {
+  app: Appointment;
+  onEdit: (app: Appointment) => void;
+  slotHeight: number;
+  timeInterval: TimeInterval;
+}
+
+const AppointmentCard: React.FC<AppointmentCardProps> = ({ app, onEdit, slotHeight, timeInterval }) => {
   const startHour = app.startTime.getHours();
   const startMin = app.startTime.getMinutes();
-  const top = ((startHour - BUSINESS_HOURS.start) * cellHeight) + (startMin / 60 * cellHeight);
+  const slotsPerHour = 60 / timeInterval;
+  const pixelsPerMinute = slotHeight / timeInterval;
+  
+  const top = ((startHour - BUSINESS_HOURS.start) * 60 + startMin) * pixelsPerMinute;
   const service = SERVICES.find(s => s.id === app.serviceId);
   const duration = app.isBlock ? (app.durationOverride || 60) : (service?.duration || 60);
-  const height = (duration / 60) * cellHeight;
+  const height = duration * pixelsPerMinute;
 
   return (
     <div
       onClick={(e) => { e.stopPropagation(); onEdit(app); }}
-      className={`absolute left-2 right-2 rounded-[1.2rem] p-5 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.08)] border-l-[6px] transition-all cursor-pointer z-10 group overflow-hidden active:scale-[0.98]
+      className={`absolute left-2 right-2 rounded-[1.2rem] p-4 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.08)] border-l-[6px] transition-all cursor-pointer z-10 group overflow-hidden active:scale-[0.98]
         ${app.isBlock ? 'bg-muted border-muted-foreground shadow-none' : 'bg-card border-primary'}
       `}
-      style={{ top: `${top + 4}px`, height: `${height - 8}px` }}
+      style={{ top: `${top + 4}px`, height: `${Math.max(height - 8, 32)}px` }}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1.5 opacity-40">
-          <Clock className="w-3.5 h-3.5" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{format(app.startTime, 'HH:mm')}</span>
+          <Clock className="w-3 h-3" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{format(app.startTime, 'HH:mm')}</span>
         </div>
       </div>
-      <p className={`font-black text-sm truncate leading-tight mb-1 ${app.isBlock ? 'text-muted-foreground' : 'text-foreground'}`}>{app.customerName}</p>
-      {!app.isBlock && <p className="text-[10px] font-black text-primary uppercase tracking-widest truncate">{service?.name}</p>}
+      <p className={`font-black text-sm truncate leading-tight ${app.isBlock ? 'text-muted-foreground' : 'text-foreground'}`}>{app.customerName}</p>
+      {!app.isBlock && height > 60 && <p className="text-[9px] font-black text-primary uppercase tracking-widest truncate mt-1">{service?.name}</p>}
     </div>
   );
 };
