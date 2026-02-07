@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Calendar as CalendarIcon, 
   Users, 
@@ -50,9 +50,10 @@ import {
   SalonRegistration 
 } from '@/components/zenbook';
 import { AdminDashboard } from '@/components/zenbook/AdminDashboard';
-import { storageService } from '@/services/storageService';
-import { SERVICES } from '@/constants';
 import { useAuth } from '@/hooks/useAuth';
+import { useStaffMembers } from '@/hooks/useStaffMembers';
+import { useProducts } from '@/hooks/useProducts';
+import { useReservations } from '@/hooks/useReservations';
 import { AuthPage } from '@/components/auth';
 
 const navItems = [
@@ -66,11 +67,14 @@ const navItems = [
 
 const ZenBookApp: React.FC = () => {
   const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
+  
+  // Supabase hooks for data
+  const { staffMembers: supabaseStaff, loading: staffLoading, createStaffMember, deleteStaffMember } = useStaffMembers();
+  const { products: supabaseProducts, loading: productsLoading, createProduct } = useProducts();
+  const { reservations: supabaseReservations, loading: reservationsLoading, createReservation, deleteReservation: deleteSupabaseReservation } = useReservations();
+  
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [currentView, setCurrentView] = useState<ViewType>('calendar');
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [staffMembers, setStaffMembers] = useState<Staff[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -78,6 +82,38 @@ const ZenBookApp: React.FC = () => {
   const [showAddDropdown, setShowAddDropdown] = useState(false);
   const [editingAppointmentId, setEditingAppointmentId] = useState<string | null>(null);
   const [apiActivity, setApiActivity] = useState(false);
+
+  // Convert Supabase data to app format
+  const staffMembers: Staff[] = useMemo(() => 
+    supabaseStaff.map(s => ({
+      id: s.id,
+      name: s.name,
+      role: 'Mitarbeiter',
+      avatar: s.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${s.name}`,
+      color: s.color
+    })), [supabaseStaff]);
+
+  const services: Service[] = useMemo(() => 
+    supabaseProducts.map(p => ({
+      id: p.id,
+      name: p.name,
+      duration: p.duration_minutes,
+      price: Number(p.price),
+      category: p.category
+    })), [supabaseProducts]);
+
+  const appointments: Appointment[] = useMemo(() => 
+    supabaseReservations.map(r => ({
+      id: r.id,
+      startTime: parseISO(`${r.date}T${r.time}`),
+      serviceId: r.product_id || '',
+      staffId: r.staff_member_id || '',
+      customerName: r.customer_name,
+      status: r.status === 'confirmed' ? AppointmentStatus.CONFIRMED : 
+              r.status === 'cancelled' ? AppointmentStatus.CANCELLED :
+              r.status === 'completed' ? AppointmentStatus.COMPLETED : AppointmentStatus.PENDING,
+      isBlock: false
+    })), [supabaseReservations]);
 
   // Auto-set userRole when authenticated
   useEffect(() => {
@@ -96,13 +132,6 @@ const ZenBookApp: React.FC = () => {
   });
 
   useEffect(() => {
-    storageService.init();
-    setAppointments(storageService.getAppointments());
-    setStaffMembers(storageService.getStaff());
-    setServices(storageService.getServices());
-  }, []);
-
-  useEffect(() => {
     if (staffMembers.length > 0 && services.length > 0) {
       setNewBooking(prev => ({
         ...prev,
@@ -117,43 +146,57 @@ const ZenBookApp: React.FC = () => {
     end: endOfWeek(endOfMonth(currentMonth), { locale: de })
   });
 
-  const handleIncomingWebhook = (payload: any) => {
+  const handleIncomingWebhook = async (payload: any) => {
     setApiActivity(true);
     const matchedService = services.find(s => s.name.toLowerCase().includes(payload.serviceName.toLowerCase())) || services[0];
     const matchedStaff = staffMembers.find(s => s.name.toLowerCase().includes(payload.staffName.toLowerCase())) || staffMembers[0];
     
     if (!matchedService || !matchedStaff) return;
     
-    const newApp: Appointment = {
-      id: 'api-' + Math.random().toString(36).substr(2, 9),
-      startTime: parseISO(payload.startTime),
-      serviceId: matchedService.id,
-      staffId: matchedStaff.id,
-      customerName: payload.customerName,
-      status: AppointmentStatus.CONFIRMED
-    };
-    storageService.saveAppointment(newApp);
-    setAppointments(storageService.getAppointments());
-    setSelectedDate(newApp.startTime);
-    setCurrentView('calendar');
+    try {
+      const startTime = parseISO(payload.startTime);
+      await createReservation({
+        customer_name: payload.customerName,
+        customer_phone: null,
+        customer_email: null,
+        date: format(startTime, 'yyyy-MM-dd'),
+        time: format(startTime, 'HH:mm:ss'),
+        end_time: null,
+        staff_member_id: matchedStaff.id,
+        product_id: matchedService.id,
+        status: 'confirmed',
+        source: 'voice_agent',
+        notes: null
+      });
+      setSelectedDate(startTime);
+      setCurrentView('calendar');
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+    }
     setTimeout(() => setApiActivity(false), 3000);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const bookingDate = startOfDay(selectedDate);
     bookingDate.setHours(newBooking.hour);
-    const appData: Appointment = {
-      id: editingAppointmentId || Math.random().toString(36).substr(2, 9),
-      startTime: bookingDate,
-      serviceId: modalType === 'block' ? 'block' : newBooking.serviceId,
-      staffId: newBooking.staffId,
-      customerName: modalType === 'block' ? newBooking.blockReason : newBooking.customer || 'Gast',
-      isBlock: modalType === 'block',
-      status: AppointmentStatus.CONFIRMED,
-      durationOverride: modalType === 'block' ? newBooking.blockDuration : undefined
-    };
-    storageService.saveAppointment(appData);
-    setAppointments(storageService.getAppointments());
+    
+    try {
+      await createReservation({
+        customer_name: modalType === 'block' ? newBooking.blockReason : newBooking.customer || 'Gast',
+        customer_phone: null,
+        customer_email: null,
+        date: format(bookingDate, 'yyyy-MM-dd'),
+        time: format(bookingDate, 'HH:mm:ss'),
+        end_time: null,
+        staff_member_id: newBooking.staffId,
+        product_id: modalType === 'block' ? null : newBooking.serviceId,
+        status: 'confirmed',
+        source: 'manual',
+        notes: modalType === 'block' ? 'Blockierung' : null
+      });
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+    }
     setModalType(null);
     setEditingAppointmentId(null);
   };
@@ -200,8 +243,6 @@ const ZenBookApp: React.FC = () => {
     return (
       <SalonRegistration 
         onComplete={() => { 
-          storageService.init(); 
-          setStaffMembers(storageService.getStaff()); 
           setUserRole('salon'); 
         }} 
         onCancel={() => setUserRole(null)} 
@@ -396,16 +437,25 @@ const ZenBookApp: React.FC = () => {
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
               onUpdateAppointment={(app) => { setEditingAppointmentId(app.id); setNewBooking({ ...newBooking, staffId: app.staffId, customer: app.customerName, hour: app.startTime.getHours() }); setModalType(app.isBlock ? 'block' : 'appointment'); }}
-              onDeleteAppointment={(id) => { storageService.deleteAppointment(id); setAppointments(storageService.getAppointments()); }}
+              onDeleteAppointment={async (id) => { 
+                try {
+                  await deleteSupabaseReservation(id);
+                } catch (error) {
+                  console.error('Error deleting reservation:', error);
+                }
+              }}
               staff={staffMembers}
               onSlotClick={(staffId, hour) => { setNewBooking({ ...newBooking, staffId, hour, customer: '' }); setModalType('appointment'); }}
             />
           )}
           {currentView === 'customers' && <CustomerManagement />}
           {currentView === 'services' && <ServiceManagement services={services} />}
-          {currentView === 'staff' && <StaffManagement staff={staffMembers} onAddStaff={(s) => { 
-            storageService.saveStaff(s);
-            setStaffMembers(storageService.getStaff());
+          {currentView === 'staff' && <StaffManagement staff={staffMembers} onAddStaff={async (s) => { 
+            try {
+              await createStaffMember({ name: s.name, color: s.color });
+            } catch (error) {
+              console.error('Error creating staff member:', error);
+            }
           }} />}
           {currentView === 'insights' && <Insights appointments={appointments} services={services} staff={staffMembers} />}
           {currentView === 'settings' && <SettingsComponent onSimulateIncoming={handleIncomingWebhook} />}
