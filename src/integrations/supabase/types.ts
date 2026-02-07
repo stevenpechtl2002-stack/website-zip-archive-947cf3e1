@@ -374,6 +374,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: never; Returns: boolean }
       update_api_key_last_used: {
         Args: { _key_hash: string }
         Returns: undefined
