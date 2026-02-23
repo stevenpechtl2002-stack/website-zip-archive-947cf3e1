@@ -89,6 +89,101 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_api_keys: {
+        Row: {
+          api_key: string
+          created_at: string
+          customer_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_api_keys_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          email: string
+          id: string
+          notes: string | null
+          plan: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          email: string
+          id: string
+          notes?: string | null
+          plan?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          notes?: string | null
+          plan?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
@@ -356,6 +451,39 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voice_agent_config: {
+        Row: {
+          business_name: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          is_active: boolean
+          opening_hours: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_name?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean
+          opening_hours?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_name?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean
+          opening_hours?: Json
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

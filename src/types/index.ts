@@ -73,5 +73,5 @@ export interface Customer {
   notes?: string;
 }
 
-export type ViewType = 'calendar' | 'services' | 'staff' | 'insights' | 'settings' | 'customers';
+export type ViewType = 'calendar' | 'services' | 'staff' | 'insights' | 'settings' | 'customers' | 'api';
 export type UserRole = 'salon' | 'customer' | 'salon_registration' | 'admin' | null;
