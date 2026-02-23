@@ -82,7 +82,7 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2 space-y-12">
-                <div className="relative h-[400px] rounded-[3.5rem] overflow-hidden shadow-2xl">
+                <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
                   <img src={viewedSalon.image} className="w-full h-full object-cover" alt={viewedSalon.name} />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent"></div>
                   <div className="absolute bottom-10 left-10 text-primary-foreground">
@@ -99,7 +99,7 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
                   <h3 className="text-3xl font-black text-foreground tracking-tight">Verfügbare Services</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {SERVICES.map(service => (
-                      <div key={service.id} className="bg-card p-8 rounded-[2.5rem] border border-border shadow-xl flex justify-between items-center group hover:border-primary/50 transition-all">
+                      <div key={service.id} className="bg-card p-8 rounded-2xl border border-border shadow-xl flex justify-between items-center group hover:border-primary/50 transition-all">
                         <div>
                           <h4 className="text-xl font-black text-foreground">{service.name}</h4>
                           <div className="flex items-center gap-4 text-muted-foreground font-bold text-sm mt-1">
@@ -117,7 +117,7 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
               </div>
 
               <div className="space-y-8">
-                 <div className="bg-card p-8 rounded-[3rem] shadow-2xl border border-border">
+                 <div className="bg-card p-8 rounded-2xl shadow-2xl border border-border">
                     <h4 className="text-xl font-black text-foreground mb-6">Öffnungszeiten</h4>
                     <div className="space-y-4">
                       {['Mo - Fr', 'Sa', 'So'].map((day, i) => (
@@ -146,8 +146,8 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
               
               {/* Main Search Bar */}
               <div className="relative group max-w-2xl mx-auto mt-12">
-                <div className="absolute inset-0 bg-primary/10 rounded-[2.5rem] blur-2xl group-hover:bg-primary/20 transition-all duration-500"></div>
-                <div className="relative flex items-center bg-card rounded-[2.5rem] p-3 shadow-2xl border border-border">
+                <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-2xl group-hover:bg-primary/20 transition-all duration-500"></div>
+                <div className="relative flex items-center bg-card rounded-2xl p-3 shadow-2xl border border-border">
                   <div className="pl-6 pr-4">
                     <Search className="w-6 h-6 text-muted-foreground" />
                   </div>
@@ -158,7 +158,7 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  <button className="h-14 px-10 bg-foreground text-background rounded-[2rem] font-black hover:bg-primary transition-all">
+                  <button className="h-14 px-10 bg-foreground text-background rounded-xl font-black hover:bg-primary transition-all">
                     Suchen
                   </button>
                 </div>
@@ -166,7 +166,7 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
 
               {/* Advanced Filter Bar */}
               <div className="flex flex-wrap justify-center items-center gap-4 mt-12">
-                <div className="flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-full shadow-sm">
+                <div className="flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl shadow-sm">
                    <Filter className="w-4 h-4 text-primary" />
                    <select 
                     className="bg-transparent outline-none font-bold text-sm text-foreground cursor-pointer"
@@ -177,7 +177,7 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
                    </select>
                 </div>
 
-                <div className="flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-full shadow-sm">
+                <div className="flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl shadow-sm">
                    <MapPin className="w-4 h-4 text-primary" />
                    <select 
                     className="bg-transparent outline-none font-bold text-sm text-foreground cursor-pointer"
@@ -188,7 +188,7 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
                    </select>
                 </div>
 
-                <div className="flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-full shadow-sm">
+                <div className="flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl shadow-sm">
                    <SlidersHorizontal className="w-4 h-4 text-primary" />
                    <select 
                     className="bg-transparent outline-none font-bold text-sm text-foreground cursor-pointer"
@@ -217,7 +217,8 @@ const CustomerPortal: React.FC<Props> = ({ onLogout }) => {
                   <div 
                     key={salon.id} 
                     onClick={() => setViewedSalon(salon)}
-                    className="bg-card rounded-[3rem] overflow-hidden border border-border shadow-2xl floating-card group cursor-pointer"
+                    className="bg-card rounded-2xl overflow-hidden border border-border shadow-2xl group cursor-pointer hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.12)] transition-all duration-500"
+                    style={{ perspective: '1000px' }}
                   >
                     <div className="h-56 relative overflow-hidden">
                       <img 

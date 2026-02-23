@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserRole } from '@/types';
 import { Briefcase, Heart, ArrowRight, ShieldCheck, Sparkles, User, Lock, Store } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface Props {
   onLogin: (role: UserRole) => void;
@@ -12,16 +13,41 @@ const Login: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-6 bg-background relative overflow-hidden">
-      {/* Abstract Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] animate-pulse"></div>
+      {/* Animated Mesh Gradient Orbs */}
+      <motion.div 
+        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-2xl bg-gradient-to-br from-primary/20 via-violet-500/15 to-pink-500/10 blur-[120px]"
+        animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div 
+        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-2xl bg-gradient-to-br from-pink-500/15 via-violet-500/10 to-primary/20 blur-[120px]"
+        animate={{ scale: [1, 1.15, 1], rotate: [0, -8, 0] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      />
+
+      {/* Floating 3D Elements */}
+      <motion.div 
+        className="absolute top-[20%] right-[10%] w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-violet-500/10 backdrop-blur-xl border border-white/20"
+        animate={{ y: [0, -20, 0], rotate: [0, 8, 0] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div 
+        className="absolute bottom-[30%] left-[8%] w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500/10 to-rose-500/10 backdrop-blur-xl border border-white/20"
+        animate={{ y: [0, 15, 0], rotate: [0, -10, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      />
 
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
         
         {/* Left Side: Branding & Info */}
-        <div className="space-y-8 pr-0 lg:pr-12">
+        <motion.div 
+          className="space-y-8 pr-0 lg:pr-12"
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+        >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-[1.5rem] flex items-center justify-center text-primary-foreground font-black text-2xl shadow-2xl">
+            <div className="w-14 h-14 bg-gradient-to-br from-primary via-violet-500 to-pink-500 rounded-2xl flex items-center justify-center text-primary-foreground font-black text-2xl shadow-2xl">
               Z
             </div>
             <h1 className="text-5xl font-black tracking-tighter text-foreground">ZenBook</h1>
@@ -39,7 +65,7 @@ const Login: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
           <div className="flex gap-6 pt-4">
             <div className="flex -space-x-4">
               {[1, 2, 3, 4].map(i => (
-                <img key={i} src={`https://picsum.photos/seed/user${i}/100`} className="w-12 h-12 rounded-full border-4 border-background object-cover shadow-lg" alt="User" />
+                <img key={i} src={`https://picsum.photos/seed/user${i}/100`} className="w-12 h-12 rounded-xl border-4 border-background object-cover shadow-lg" alt="User" />
               ))}
             </div>
             <div>
@@ -47,22 +73,27 @@ const Login: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               <p className="text-xs font-bold text-muted-foreground">vertrauen auf ZenBook</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Side: Login Card */}
-        <div className="bg-card rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] border border-border p-12 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-1000"></div>
+        <motion.div 
+          className="glass-card rounded-2xl p-12 relative overflow-hidden group"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-2xl -mr-16 -mt-16 blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-1000"></div>
           
-          <div className="flex bg-muted p-2 rounded-[2rem] mb-12">
+          <div className="flex bg-muted p-1.5 rounded-xl mb-12">
             <button 
               onClick={() => setActiveTab('customer')}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[1.6rem] text-sm font-black transition-all ${activeTab === 'customer' ? 'bg-card text-primary shadow-xl' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-lg text-sm font-black transition-all ${activeTab === 'customer' ? 'bg-card text-primary shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Heart className="w-4 h-4" /> Kunden Portal
             </button>
             <button 
               onClick={() => setActiveTab('salon')}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-[1.6rem] text-sm font-black transition-all ${activeTab === 'salon' ? 'bg-primary text-primary-foreground shadow-xl' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-lg text-sm font-black transition-all ${activeTab === 'salon' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Briefcase className="w-4 h-4" /> Salon Pro
             </button>
@@ -78,43 +109,47 @@ const Login: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
 
             <div className="space-y-4">
               <div className="relative">
-                <User className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input 
                   type="email" 
                   placeholder="Email Adresse" 
-                  className="w-full pl-16 pr-8 py-5 rounded-[1.8rem] bg-muted border-2 border-transparent focus:border-primary focus:bg-card outline-none font-bold text-foreground shadow-inner transition-all"
+                  className="w-full pl-14 pr-6 py-5 rounded-xl bg-muted border-2 border-transparent focus:border-primary focus:bg-card outline-none font-bold text-foreground shadow-inner transition-all"
                   defaultValue={activeTab === 'salon' ? 'salon@zenbook.de' : 'customer@relax.de'}
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input 
                   type="password" 
                   placeholder="Passwort" 
-                  className="w-full pl-16 pr-8 py-5 rounded-[1.8rem] bg-muted border-2 border-transparent focus:border-primary focus:bg-card outline-none font-bold text-foreground shadow-inner transition-all"
+                  className="w-full pl-14 pr-6 py-5 rounded-xl bg-muted border-2 border-transparent focus:border-primary focus:bg-card outline-none font-bold text-foreground shadow-inner transition-all"
                   defaultValue="password123"
                 />
               </div>
             </div>
 
-            <button 
+            <motion.button 
               onClick={() => onLogin(activeTab)}
-              className={`w-full py-6 rounded-[2rem] text-primary-foreground font-black text-lg shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 ${activeTab === 'salon' ? 'bg-foreground' : 'bg-primary'}`}
+              className={`w-full py-6 rounded-xl text-primary-foreground font-black text-lg shadow-2xl transition-all flex items-center justify-center gap-3 ${activeTab === 'salon' ? 'bg-foreground' : 'bg-gradient-to-r from-primary via-violet-500 to-primary'}`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               Einloggen
               <ArrowRight className="w-6 h-6" />
-            </button>
+            </motion.button>
 
             {activeTab === 'salon' && (
               <div className="pt-6 border-t border-border text-center">
                 <p className="text-sm font-bold text-muted-foreground mb-6">Noch kein ZenBook Partner?</p>
-                <button 
+                <motion.button 
                   onClick={onStartRegistration}
-                  className="w-full py-5 rounded-[2rem] border-2 border-border text-foreground font-black hover:bg-muted transition-all flex items-center justify-center gap-3"
+                  className="w-full py-5 rounded-xl border-2 border-border text-foreground font-black hover:bg-muted transition-all flex items-center justify-center gap-3"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <Store className="w-5 h-5 text-primary" />
                   Salon registrieren
-                </button>
+                </motion.button>
               </div>
             )}
 
@@ -127,7 +162,7 @@ const Login: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

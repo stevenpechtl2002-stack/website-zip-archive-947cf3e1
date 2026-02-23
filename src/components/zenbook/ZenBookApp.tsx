@@ -257,7 +257,7 @@ const ZenBookApp: React.FC = () => {
   return (
     <div className="flex h-screen overflow-hidden p-4 gap-6 relative">
       {/* 3D Floating Sidebar */}
-      <aside className={`fixed lg:relative h-[calc(100vh-2rem)] z-50 flex flex-col gap-4 shrink-0 floating-3d rounded-[2.5rem] p-6 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:w-20 lg:translate-x-0 lg:p-3 overflow-hidden'}`}>
+      <aside className={`fixed lg:relative h-[calc(100vh-2rem)] z-50 flex flex-col gap-4 shrink-0 floating-3d rounded-2xl p-6 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:w-20 lg:translate-x-0 lg:p-3 overflow-hidden'}`}>
         <div className={`flex items-center gap-3 mb-4 transition-opacity duration-300 ${!isSidebarOpen && 'lg:opacity-0'}`}>
           <Logo onClick={() => { handleLogout(); setUserRole(null); }} showText={isSidebarOpen} />
         </div>
@@ -307,7 +307,7 @@ const ZenBookApp: React.FC = () => {
         </nav>
 
         <div className={`transition-all duration-300 shrink-0 ${!isSidebarOpen && 'lg:scale-0 lg:h-0 overflow-hidden'}`}>
-          <div className={`p-4 rounded-[1.5rem] bg-slate-50 border border-slate-100 text-slate-500 mb-4 transition-all duration-700 ${apiActivity ? 'bg-emerald-50 border-emerald-100' : ''}`}>
+          <div className={`p-4 rounded-xl bg-muted border border-border text-muted-foreground mb-4 transition-all duration-700 ${apiActivity ? 'bg-emerald-50 border-emerald-100' : ''}`}>
             <div className="flex items-center gap-3">
               <Radio className={`w-4 h-4 ${apiActivity ? 'animate-pulse text-emerald-500' : 'text-slate-400'}`} />
               <div className="flex-1 overflow-hidden">
@@ -318,9 +318,9 @@ const ZenBookApp: React.FC = () => {
           </div>
 
           <div className="relative mb-4">
-            <button 
+             <button 
               onClick={() => setShowAddDropdown(!showAddDropdown)}
-              className="w-full flex items-center justify-between px-6 py-5 bg-slate-900 text-white rounded-[1.5rem] font-black shadow-xl hover:bg-slate-800 transition-all active:scale-95"
+              className="w-full flex items-center justify-between px-6 py-5 bg-foreground text-background rounded-xl font-black shadow-xl hover:shadow-2xl transition-all active:scale-95"
             >
               <div className="flex items-center gap-3">
                 <Plus className="w-5 h-5" />
@@ -351,7 +351,7 @@ const ZenBookApp: React.FC = () => {
       </aside>
 
       {/* Main Container */}
-      <main className={`flex-1 flex flex-col min-w-0 floating-3d rounded-[2.5rem] overflow-hidden rim-light transition-all duration-500`}>
+      <main className={`flex-1 flex flex-col min-w-0 floating-3d rounded-2xl overflow-hidden rim-light transition-all duration-500`}>
         <header className="h-20 flex items-center justify-between px-6 lg:px-10 border-b border-slate-50 shrink-0 bg-white">
           <div className="flex items-center gap-6">
             <button 
