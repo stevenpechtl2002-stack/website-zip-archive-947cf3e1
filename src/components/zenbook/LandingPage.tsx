@@ -91,7 +91,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
           >
             <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-center gap-3 relative">
               <Sparkles className="w-4 h-4" />
-              <span className="text-xs font-bold tracking-wide">ZenBook Rewards — Sammle Punkte bei jeder Buchung!</span>
+              <span className="text-xs font-bold tracking-wide">ZenTime Rewards — Sammle Punkte bei jeder Buchung!</span>
               <button onClick={() => setShowPromoBanner(false)} className="absolute right-4 p-1 hover:bg-white/20 rounded transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -264,7 +264,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.97 }}
               >
-                Auf ZenBook finden
+                Auf ZenTime finden
               </motion.button>
             </motion.div>
           </div>
@@ -380,7 +380,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
           <AnimatedSection>
             <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">Einfach schöner buchen</h2>
-              <p className="text-muted-foreground font-medium max-w-lg mx-auto">Warum über 2 Millionen Menschen ZenBook vertrauen.</p>
+              <p className="text-muted-foreground font-medium max-w-lg mx-auto">Warum über 2 Millionen Menschen ZenTime vertrauen.</p>
             </div>
           </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -407,88 +407,8 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
         </div>
       </section>
 
-      {/* 7. Promo Cards - 2er Grid */}
-      <section className="py-16 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AnimatedSection>
-            <motion.div 
-              className="relative rounded-2xl overflow-hidden h-72 cursor-pointer bg-gradient-to-br from-accent/90 via-accent to-primary/80 p-8 flex flex-col justify-end text-white"
-              whileHover={{ y: -6, rotateX: 1, rotateY: -1 }}
-              style={{ perspective: 1000 }}
-            >
-              <motion.div className="absolute top-6 right-6" animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 4, repeat: Infinity }}>
-                <Gift className="w-16 h-16 text-white/30" />
-              </motion.div>
-              <p className="text-xs font-bold uppercase tracking-widest text-white/70 mb-2">Verschenken</p>
-              <h3 className="text-2xl font-black mb-2">Du schenkst es.<br/>Sie erleben es.</h3>
-              <p className="text-sm text-white/80">ZenBook Gutscheine – das perfekte Geschenk für jeden Anlass.</p>
-            </motion.div>
-          </AnimatedSection>
-          <AnimatedSection>
-            <motion.div 
-              className="relative rounded-2xl overflow-hidden h-72 cursor-pointer bg-gradient-to-br from-primary via-primary/90 to-primary/70 p-8 flex flex-col justify-end text-white"
-              whileHover={{ y: -6, rotateX: 1, rotateY: 1 }}
-              style={{ perspective: 1000 }}
-            >
-              <motion.div className="absolute top-6 right-6" animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity }}>
-                <Award className="w-16 h-16 text-white/30" />
-              </motion.div>
-              <p className="text-xs font-bold uppercase tracking-widest text-white/70 mb-2">Auszeichnung</p>
-              <h3 className="text-2xl font-black mb-2">Top Rated 2026</h3>
-              <p className="text-sm text-white/80">Entdecke die am besten bewerteten Salons in deiner Stadt.</p>
-            </motion.div>
-          </AnimatedSection>
-        </div>
-      </section>
 
-      {/* 8. App Download Banner */}
-      <section className="py-20 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto">
-          <AnimatedSection>
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-accent/80 p-10 lg:p-16">
-              <div className="grid lg:grid-cols-2 gap-10 items-center relative z-10">
-                <div className="text-white">
-                  <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-4">Immer dabei</p>
-                  <h2 className="text-3xl md:text-4xl font-black mb-4 leading-tight">Unsere App für<br/>Friseur & Beauty</h2>
-                  <p className="text-white/80 mb-8 max-w-md">Buche Termine, sammle Punkte und entdecke neue Salons – alles in einer App.</p>
-                  <div className="flex flex-wrap gap-3">
-                    <motion.button 
-                      className="flex items-center gap-2 px-6 py-3 bg-white/15 backdrop-blur-xl rounded-xl border border-white/20 text-sm font-bold"
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Download className="w-4 h-4" />
-                      App Store
-                    </motion.button>
-                    <motion.button 
-                      className="flex items-center gap-2 px-6 py-3 bg-white/15 backdrop-blur-xl rounded-xl border border-white/20 text-sm font-bold"
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Download className="w-4 h-4" />
-                      Google Play
-                    </motion.button>
-                  </div>
-                </div>
-                <div className="flex justify-center">
-                  <motion.div 
-                    className="w-56 h-[420px] rounded-[2rem] bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl flex items-center justify-center"
-                    animate={{ y: [0, -12, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <Smartphone className="w-20 h-20 text-white/40" />
-                  </motion.div>
-                </div>
-              </div>
-              {/* Background decorations */}
-              <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2"></div>
-              <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/2"></div>
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
 
-      {/* 9. Inspiration Section */}
       <section className="py-16 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto">
           <AnimatedSection>
@@ -719,7 +639,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
           <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md">Z</div>
-              <span className="text-sm font-black text-foreground">ZenBook<span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Beauty</span></span>
+              <span className="text-sm font-black text-foreground">ZenTime<span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Beauty</span></span>
             </div>
             
             <div className="flex items-center gap-3">
@@ -734,7 +654,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               ))}
             </div>
 
-            <p className="text-xs text-muted-foreground">© 2026 ZenBook Beauty. Alle Rechte vorbehalten.</p>
+            <p className="text-xs text-muted-foreground">© 2026 ZenTime Beauty. Alle Rechte vorbehalten.</p>
           </div>
           
           <div className="pt-4 flex justify-center">
