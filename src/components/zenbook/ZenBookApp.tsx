@@ -9,8 +9,6 @@ import {
   ChevronRight, 
   Search as SearchIcon, 
   ChevronDown, 
-  X, 
-  ShieldAlert, 
   Settings as SettingsIcon,
   LogOut,
   Sparkles,
@@ -19,7 +17,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Wand2,
-  Key,
   Loader2
 } from 'lucide-react';
 import { 
@@ -40,7 +37,6 @@ import { de } from 'date-fns/locale';
 import { ViewType, Appointment, AppointmentStatus, Staff, Service, UserRole } from '@/types';
 import { 
   LandingPage,
-  CalendarView, 
   ServiceManagement, 
   StaffManagement, 
   CustomerManagement, 
@@ -50,11 +46,14 @@ import {
   SalonRegistration 
 } from '@/components/zenbook';
 import { AdminDashboard } from '@/components/zenbook/AdminDashboard';
+import StaffCalendarView from '@/components/zenbook/StaffCalendarView';
 import Logo from '@/components/zenbook/Logo';
 import { useAuth } from '@/hooks/useAuth';
 import { useStaffMembers } from '@/hooks/useStaffMembers';
 import { useProducts } from '@/hooks/useProducts';
 import { useReservations } from '@/hooks/useReservations';
+import { useStaffShifts } from '@/hooks/useStaffShifts';
+import { useShiftExceptions } from '@/hooks/useShiftExceptions';
 import { AuthPage } from '@/components/auth';
 
 const navItems = [
@@ -72,16 +71,16 @@ const ZenBookApp: React.FC = () => {
   // Supabase hooks for data
   const { staffMembers: supabaseStaff, loading: staffLoading, createStaffMember, deleteStaffMember } = useStaffMembers();
   const { products: supabaseProducts, loading: productsLoading, createProduct } = useProducts();
-  const { reservations: supabaseReservations, loading: reservationsLoading, createReservation, deleteReservation: deleteSupabaseReservation } = useReservations();
+  const { reservations: supabaseReservations, loading: reservationsLoading, createReservation, updateReservation, deleteReservation: deleteSupabaseReservation } = useReservations();
+  const { shifts, loading: shiftsLoading } = useStaffShifts();
+  const { exceptions, loading: exceptionsLoading } = useShiftExceptions();
   
   const [userRole, setUserRole] = useState<UserRole>(null);
   const [currentView, setCurrentView] = useState<ViewType>('calendar');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [modalType, setModalType] = useState<'appointment' | 'block' | null>(null);
   const [showAddDropdown, setShowAddDropdown] = useState(false);
-  const [editingAppointmentId, setEditingAppointmentId] = useState<string | null>(null);
   const [apiActivity, setApiActivity] = useState(false);
 
   // Convert Supabase data to app format
@@ -123,24 +122,6 @@ const ZenBookApp: React.FC = () => {
     }
   }, [isAuthenticated, userRole]);
 
-  const [newBooking, setNewBooking] = useState({
-    staffId: '',
-    hour: 9,
-    customer: '',
-    serviceId: '',
-    blockReason: 'Pause',
-    blockDuration: 60
-  });
-
-  useEffect(() => {
-    if (staffMembers.length > 0 && services.length > 0) {
-      setNewBooking(prev => ({
-        ...prev,
-        staffId: staffMembers[0].id,
-        serviceId: services[0].id
-      }));
-    }
-  }, [staffMembers, services]);
 
   const calendarDays = eachDayOfInterval({
     start: startOfWeek(startOfMonth(currentMonth), { locale: de }),
@@ -177,30 +158,6 @@ const ZenBookApp: React.FC = () => {
     setTimeout(() => setApiActivity(false), 3000);
   };
 
-  const handleSave = async () => {
-    const bookingDate = startOfDay(selectedDate);
-    bookingDate.setHours(newBooking.hour);
-    
-    try {
-      await createReservation({
-        customer_name: modalType === 'block' ? newBooking.blockReason : newBooking.customer || 'Gast',
-        customer_phone: null,
-        customer_email: null,
-        date: format(bookingDate, 'yyyy-MM-dd'),
-        time: format(bookingDate, 'HH:mm:ss'),
-        end_time: null,
-        staff_member_id: newBooking.staffId,
-        product_id: modalType === 'block' ? null : newBooking.serviceId,
-        status: 'confirmed',
-        source: 'manual',
-        notes: modalType === 'block' ? 'Blockierung' : null
-      });
-    } catch (error) {
-      console.error('Error creating reservation:', error);
-    }
-    setModalType(null);
-    setEditingAppointmentId(null);
-  };
 
   const handleLogout = async () => {
     await signOut();
@@ -369,14 +326,11 @@ const ZenBookApp: React.FC = () => {
               <ChevronDown className={`w-4 h-4 transition-transform ${showAddDropdown ? 'rotate-180' : ''}`} />
             </button>
             {showAddDropdown && (
-              <div className="absolute bottom-full left-0 right-0 mb-3 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[60] py-2 animate-in slide-in-from-bottom-2">
-                <button onClick={() => { setModalType('appointment'); setShowAddDropdown(false); }} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
-                  <CalendarIcon className="w-4 h-4" /> Termin
+              <div className="absolute bottom-full left-0 right-0 mb-3 bg-card rounded-2xl shadow-2xl border border-border z-[60] py-2 animate-in slide-in-from-bottom-2">
+                <button onClick={() => { setCurrentView('calendar'); setShowAddDropdown(false); }} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-foreground hover:bg-muted">
+                  <CalendarIcon className="w-4 h-4" /> Termin (im Kalender)
                 </button>
-                <button onClick={() => { setModalType('block'); setShowAddDropdown(false); }} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-slate-600 hover:bg-slate-50">
-                  <ShieldAlert className="w-4 h-4" /> Pause
-                </button>
-                <button onClick={() => setShowAddDropdown(false)} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-indigo-600 hover:bg-indigo-50">
+                <button onClick={() => setShowAddDropdown(false)} className="w-full flex items-center gap-3 px-5 py-4 text-xs font-bold text-primary hover:bg-primary/5">
                   <Sparkles className="w-4 h-4" /> KI-Buchung
                 </button>
               </div>
@@ -425,20 +379,17 @@ const ZenBookApp: React.FC = () => {
 
         <div className="flex-1 overflow-auto p-10 relative no-scrollbar bg-white">
           {currentView === 'calendar' && (
-            <CalendarView 
-              appointments={appointments} 
+            <StaffCalendarView
+              reservations={supabaseReservations}
+              staffMembers={supabaseStaff}
+              shifts={shifts}
+              exceptions={exceptions}
+              products={supabaseProducts}
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
-              onUpdateAppointment={(app) => { setEditingAppointmentId(app.id); setNewBooking({ ...newBooking, staffId: app.staffId, customer: app.customerName, hour: app.startTime.getHours() }); setModalType(app.isBlock ? 'block' : 'appointment'); }}
-              onDeleteAppointment={async (id) => { 
-                try {
-                  await deleteSupabaseReservation(id);
-                } catch (error) {
-                  console.error('Error deleting reservation:', error);
-                }
-              }}
-              staff={staffMembers}
-              onSlotClick={(staffId, hour) => { setNewBooking({ ...newBooking, staffId, hour, customer: '' }); setModalType('appointment'); }}
+              onCreateReservation={createReservation}
+              onUpdateReservation={updateReservation}
+              onDeleteReservation={deleteSupabaseReservation}
             />
           )}
           {currentView === 'customers' && <CustomerManagement />}
@@ -463,57 +414,6 @@ const ZenBookApp: React.FC = () => {
         ></div>
       )}
 
-      {/* Modern Dialog */}
-      {modalType && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/30 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-white rounded-[2rem] w-full max-w-lg p-10 shadow-2xl border border-slate-100">
-            <div className="flex justify-between items-center mb-8">
-               <h4 className="text-2xl font-black text-slate-900 tracking-tight">{editingAppointmentId ? 'Bearbeiten' : 'Neue Buchung'}</h4>
-               <button onClick={() => setModalType(null)} className="p-2 text-slate-400 hover:text-rose-500"><X className="w-6 h-6" /></button>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="zen-label ml-1">{modalType === 'block' ? 'Grund' : 'Kundenname'}</label>
-                <input type="text" className="zen-input"
-                  value={modalType === 'block' ? newBooking.blockReason : newBooking.customer} 
-                  onChange={(e) => modalType === 'block' ? setNewBooking({...newBooking, blockReason: e.target.value}) : setNewBooking({...newBooking, customer: e.target.value})} />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                   <label className="zen-label ml-1">Team</label>
-                   <select className="zen-input" value={newBooking.staffId} onChange={e => setNewBooking({...newBooking, staffId: e.target.value})}>
-                      {staffMembers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                   </select>
-                </div>
-                <div className="space-y-2">
-                   <label className="zen-label ml-1">Uhrzeit</label>
-                   <select className="zen-input" value={newBooking.hour} onChange={e => setNewBooking({...newBooking, hour: parseInt(e.target.value)})}>
-                      {Array.from({length: 13}, (_, i) => i + 8).map(h => <option key={h} value={h}>{h}:00 Uhr</option>)}
-                   </select>
-                </div>
-              </div>
-
-              {modalType === 'appointment' && (
-                <div className="space-y-2">
-                  <label className="zen-label ml-1">Service</label>
-                  <select className="zen-input" value={newBooking.serviceId} onChange={e => setNewBooking({...newBooking, serviceId: e.target.value})}>
-                    {services.map(s => <option key={s.id} value={s.id}>{s.name} - €{s.price}</option>)}
-                  </select>
-                </div>
-              )}
-
-              <div className="flex gap-4 pt-6">
-                <button onClick={() => setModalType(null)} className="flex-1 zen-button-secondary">Abbrechen</button>
-                <button onClick={handleSave} className="flex-[2] zen-button-primary">
-                  Bestätigen
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
