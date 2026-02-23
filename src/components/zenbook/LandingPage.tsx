@@ -204,9 +204,9 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               className="text-4xl md:text-6xl lg:text-7xl font-black leading-[0.95] tracking-tight mb-6"
             >
               Überspring den Stress.{' '}
-              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Buch das Treatment.
-              </span>
+               <span className="text-accent">
+                 Buch das Treatment.
+               </span>
             </motion.h1>
 
             <motion.p
@@ -484,7 +484,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-6">Für Geschäftspartner</p>
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[0.95] tracking-tight">
-                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Sie haben</span>
+                  <span className="text-primary">Sie haben</span>
                   <br />einen Salon?<br />
                   <span className="text-foreground">Bringen Sie ihn online.</span>
                 </h2>
@@ -564,7 +564,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                   className="absolute -bottom-5 -left-5 bg-card rounded-2xl p-5 shadow-xl border border-border z-10"
                   whileHover={{ scale: 1.05 }}
                 >
-                  <p className="text-3xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">+127%</p>
+                  <p className="text-3xl font-black text-primary">+127%</p>
                   <p className="text-xs font-bold text-muted-foreground mt-1">Wachstum</p>
                 </motion.div>
               </div>
@@ -589,7 +589,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                   whileHover={{ y: -6, rotateX: 2, rotateY: -1 }}
                   style={{ perspective: 1000 }}
                 >
-                  <p className="text-3xl md:text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{stat.value}</p>
+                  <p className="text-3xl md:text-4xl font-black text-primary">{stat.value}</p>
                   <p className="text-xs font-bold text-muted-foreground mt-2">{stat.label}</p>
                 </motion.div>
               </AnimatedSection>
@@ -639,7 +639,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
           <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md">Z</div>
-              <span className="text-sm font-black text-foreground">ZenTime<span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Beauty</span></span>
+              <span className="text-sm font-black text-foreground">ZenTime<span className="text-accent">Beauty</span></span>
             </div>
             
             <div className="flex items-center gap-3">
