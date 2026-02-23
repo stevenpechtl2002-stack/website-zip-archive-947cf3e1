@@ -1,131 +1,107 @@
 
 
-# Fehlende Tabellen, Trigger und API-Key-Automatisierung
+# Komplettes Design-Overhaul: Moderne, kantige Aesthetic mit 3D-Effekten
 
 ## Zusammenfassung
 
-Das bestehende System hat bereits Multi-Tenancy (RLS mit `auth.uid() = user_id`) auf den Kerntabellen. Es fehlen aber die Tabellen `customers`, `customer_api_keys`, `notifications` und `voice_agent_config`, sowie der erweiterte `handle_new_user()`-Trigger fuer automatische API-Key-Generierung und der `sync_reservation_to_contact`-Trigger.
+Alle Komponenten erhalten ein moderneres Design: weniger runde Ecken (von `rounded-3xl/full` zu `rounded-xl/2xl`), verbesserte Farbverlaeufe, schwebende 3D-Elemente mit Framer Motion und feinere Animationen. Das Ziel ist ein cleanes, kantiges Apple/Vercel-inspiriertes Design.
 
 ---
 
-## Was bereits existiert
+## Design-Aenderungen im Ueberblick
 
-- Tabellen: `staff_members`, `staff_shifts`, `shift_exceptions`, `products`, `reservations`, `contacts`, `profiles`, `user_roles`, `api_keys`
-- RLS-Policies auf allen Tabellen mit `auth.uid() = user_id`
-- `handle_new_user()` Trigger (erstellt Profil + Rolle "salon")
-- `has_role()`, `is_admin()`, `get_staff_owner()` Funktionen
-- Edge Functions: `generate-api-key`, `get-available-slots`, `create-reservation`, `cancel-reservation`
-- Enum `app_role`: admin, salon, customer
+### 1. Globales Design-System (`src/index.css`)
+- Neue CSS-Custom-Properties fuer verbesserte Glassmorphism-Effekte
+- Schaerfe Schatten mit mehr Tiefe und Farbe
+- Neue Utility-Klassen: `.glass-card`, `.gradient-border`, `.float-animation`
+- Body-Hintergrund: subtilerer Mesh-Gradient mit mehr Farbstufen
+- `rounded-full` und `rounded-[3rem/4rem]` ersetzen durch `rounded-xl` / `rounded-2xl`
+- Neue Keyframe-Animationen: `float`, `shimmer`, `glow-pulse`
 
-## Was neu erstellt wird
+### 2. LandingPage (`src/components/zenbook/LandingPage.tsx`)
+- **Header**: `rounded-full` Buttons zu `rounded-xl` aendern
+- **Hero**: Schwebende 3D-Elemente erhalten `rounded-2xl` statt `rounded-3xl`, intensivere Farbverlaeufe mit `from-indigo-600 via-purple-600 to-fuchsia-500`
+- **Search Bar**: Von `rounded-full` zu `rounded-2xl`, eckigerer Look
+- **Salon Cards**: `rounded-3xl` zu `rounded-2xl`, verbesserter Hover mit `rotateX/rotateY` und `perspective`
+- **Inspiration Section**: `rounded-[3rem]` zu `rounded-2xl`
+- **Neue 3D-Schwebeelemente**: Mesh-Gradient-Kugeln mit `blur` und `mix-blend-mode`
+- **Stats-Section**: Glassmorphism-Cards statt reinem Text
+- **Footer**: Moderner mit Gradient-Border oben
 
-### Phase 1: Datenbank-Migration
+### 3. ZenBookApp / Dashboard (`src/components/zenbook/ZenBookApp.tsx`)
+- **Sidebar**: `rounded-[2.5rem]` zu `rounded-2xl`, schaerferer Glaseffekt
+- **Main Container**: `rounded-[2.5rem]` zu `rounded-2xl`
+- **Navigation Buttons**: `rounded-xl` beibehalten, aber Hover mit subtiler `translateX` Animation
+- **Header**: Schaerfe Glaseffekte, eckigere Elemente
+- **Add-Button**: `rounded-[1.5rem]` zu `rounded-xl`
+- **Mini-Kalender**: Kompakteres Design
 
-**1. Enum erweitern** -- `app_role` um 'sales' erweitern (falls gewuenscht, ansonsten bleibt es bei admin/salon/customer)
+### 4. Login (`src/components/zenbook/Login.tsx`)
+- **Card**: `rounded-[4rem]` zu `rounded-2xl`
+- **Tabs**: `rounded-[2rem]` zu `rounded-xl`
+- **Inputs**: `rounded-[1.8rem]` zu `rounded-xl`
+- **Button**: `rounded-[2rem]` zu `rounded-xl`
+- Hintergrund-Orbs erhalten animierte Mesh-Gradients
 
-**2. Neue Tabellen:**
+### 5. CustomerPortal (`src/components/zenbook/CustomerPortal.tsx`)
+- **Header**: `rounded-2xl` Logout-Button
+- **Search Bar**: `rounded-[2.5rem]` zu `rounded-2xl`
+- **Salon Cards**: `rounded-[3rem]` zu `rounded-2xl`, 3D-Hover mit Perspective
+- **Detail View**: `rounded-[3.5rem]` zu `rounded-2xl`
+- **Filter Chips**: `rounded-full` zu `rounded-xl`
 
-- **`customers`** -- Business-Kunden / Account-Inhaber
-  - `id` uuid PK (= auth.users.id)
-  - `email` text NOT NULL
-  - `company_name` text nullable
-  - `plan` text default 'starter'
-  - `status` text default 'active'
-  - `notes` text nullable
-  - RLS: SELECT/UPDATE wenn `auth.uid() = id`, Admins ALL
+### 6. SalonRegistration (`src/components/zenbook/SalonRegistration.tsx`)
+- **Stepper**: `rounded-2xl` Schritte statt stark gerundet
+- **Content Card**: `rounded-[4rem]` zu `rounded-2xl`
+- **Inputs**: Einheitlich `rounded-xl`
+- **Service Cards**: `rounded-3xl` zu `rounded-xl`
 
-- **`customer_api_keys`** -- Automatische API-Keys pro Business
-  - `id` uuid PK default gen_random_uuid()
-  - `customer_id` uuid NOT NULL (FK -> customers.id)
-  - `api_key` uuid NOT NULL default gen_random_uuid()
-  - `created_at`, `updated_at` timestamptz
-  - RLS: SELECT/UPDATE wenn `auth.uid() = customer_id`, Admins ALL
+### 7. Settings (`src/components/zenbook/Settings.tsx`)
+- Cards: `rounded-2xl` beibehalten
+- Neue Gradient-Borders und Glow-Effekte auf Hover
 
-- **`notifications`** -- Benachrichtigungen
-  - `id` uuid PK default gen_random_uuid()
-  - `user_id` uuid NOT NULL
-  - `title` text NOT NULL
-  - `message` text NOT NULL
-  - `type` text default 'info' (info/success/warning/error)
-  - `is_read` boolean default false
-  - `created_at` timestamptz
-  - RLS: SELECT/UPDATE wenn `auth.uid() = user_id`
+### 8. ApiSettings (`src/components/zenbook/ApiSettings.tsx`)
+- Eckigeres Card-Design
+- Subtle Glow-Effekt auf dem API-Key-Bereich
 
-- **`voice_agent_config`** -- Oeffnungszeiten / Konfiguration
-  - `id` uuid PK default gen_random_uuid()
-  - `user_id` uuid NOT NULL UNIQUE
-  - `business_name` text nullable
-  - `industry` text nullable
-  - `opening_hours` jsonb default '{}'
-  - `is_active` boolean default false
-  - `created_at`, `updated_at` timestamptz
-  - RLS: SELECT/UPDATE/INSERT/DELETE wenn `auth.uid() = user_id`
+### 9. Logo (`src/components/zenbook/Logo.tsx`)
+- Logo-Icon: `rounded-xl` zu `rounded-lg` (noch kantiger)
+- Neuer subtiler Gradient-Schatten
 
-**3. Erweiterter `handle_new_user()` Trigger:**
-- Profil erstellen (wie bisher)
-- Rolle 'customer' zuweisen (statt 'salon')
-- `customers`-Datensatz erstellen (id, email, company_name aus Metadaten)
-- Automatisch `customer_api_keys`-Eintrag erstellen
-- Willkommens-Notification erstellen
+### 10. AuthPage (`src/components/auth/AuthPage.tsx`)
+- Card: `rounded-2xl` beibehalten, verbesserter Hintergrund-Gradient
 
-**4. Neuer `sync_reservation_to_contact()` Trigger:**
-- AFTER INSERT auf `reservations`
-- Sucht bestehenden Kontakt per Telefon, E-Mail oder Name
-- Erstellt neuen Kontakt oder aktualisiert `booking_count` und `last_visit`
+---
 
-### Phase 2: Frontend-Aenderungen
+## Neue Animationen und 3D-Effekte
 
-**5. API-Einstellungen-Seite im Portal**
-- Neuer Nav-Eintrag "API" in der Sidebar (in `ZenBookApp.tsx`)
-- Neue Komponente `ApiSettings.tsx`:
-  - Zeigt den automatisch generierten API-Key (aus `customer_api_keys`) maskiert an
-  - Anzeigen/Verbergen-Toggle
-  - Kopieren-Button
-  - "Neuen Key generieren"-Button (regeneriert via `crypto.randomUUID()`)
-  - Status-Badge (Aktiv/Inaktiv)
-  - n8n-Konfigurationsanleitung mit Beispiel-JSON
-
-**6. Hook `useCustomerApiKey`**
-- Liest/schreibt `customer_api_keys` fuer den aktuellen User
-- Funktion zum Regenerieren des Keys
-
-**7. Hook `useBusinessSettings`**
-- Liest/schreibt `voice_agent_config` (Oeffnungszeiten)
-- `isDayClosed(dayIndex)` Hilfsfunktion
-- Default-Werte: Mo-Fr 09:00-18:00, Sa 09:00-14:00, So geschlossen
-
-**8. Hook `useNotifications`**
-- Liest Notifications fuer den aktuellen User
-- Markiert als gelesen
+1. **Floating Mesh Gradients**: Grosse, weiche Farbflaechen die langsam schweben
+2. **Card Hover 3D**: `perspective(1000px) rotateX(2deg) rotateY(-2deg)` auf Hover
+3. **Shimmer-Effekt**: Auf CTA-Buttons, subtiler Lichtstreifen
+4. **Glow Pulse**: Sanftes Pulsieren von farbigen Schatten
+5. **Staggered Entrance**: Elemente erscheinen nacheinander mit Delay
+6. **Parallax Depth**: Verschiedene Scroll-Geschwindigkeiten fuer Hintergrund-Elemente
 
 ---
 
 ## Technische Details
 
-### Datenbank-Migration SQL (Zusammenfassung)
+### Geaenderte Dateien
 
-```text
-1. CREATE TABLE customers (id, email, company_name, plan, status, notes, created_at, updated_at)
-2. CREATE TABLE customer_api_keys (id, customer_id FK, api_key, created_at, updated_at)
-3. CREATE TABLE notifications (id, user_id, title, message, type, is_read, created_at)
-4. CREATE TABLE voice_agent_config (id, user_id UNIQUE, business_name, industry, opening_hours jsonb, is_active, created_at, updated_at)
-5. RLS aktivieren + Policies fuer alle neuen Tabellen
-6. DROP + RECREATE handle_new_user() mit erweiterter Logik
-7. CREATE sync_reservation_to_contact() Trigger-Funktion
-8. CREATE TRIGGER on reservations AFTER INSERT
-```
+| Datei | Aenderung |
+|---|---|
+| `src/index.css` | Neue Utility-Klassen, angepasste Variablen, neue Keyframes |
+| `src/components/zenbook/LandingPage.tsx` | Border-Radius, Farbverlaeufe, 3D-Hover, neue Schwebeelemente |
+| `src/components/zenbook/ZenBookApp.tsx` | Sidebar/Main Border-Radius, schaerfere Glaseffekte |
+| `src/components/zenbook/Login.tsx` | Alle Border-Radius reduzieren, animierte Hintergrund-Orbs |
+| `src/components/zenbook/CustomerPortal.tsx` | Cards eckiger, 3D-Hover, Filter-Chips |
+| `src/components/zenbook/SalonRegistration.tsx` | Stepper, Cards, Inputs eckiger |
+| `src/components/zenbook/Settings.tsx` | Gradient-Borders, Glow-Hover |
+| `src/components/zenbook/ApiSettings.tsx` | Eckigere Cards, Glow-Effekt |
+| `src/components/zenbook/Logo.tsx` | Kantigeres Icon, Gradient-Shadow |
+| `src/components/auth/AuthPage.tsx` | Verbesserter Hintergrund |
 
-### Neue/Geaenderte Dateien
-
-- `src/hooks/useCustomerApiKey.ts` -- neu
-- `src/hooks/useBusinessSettings.ts` -- neu
-- `src/hooks/useNotifications.ts` -- neu
-- `src/components/zenbook/ApiSettings.tsx` -- neu (ersetzt/ergaenzt bestehende ApiKeyManagement)
-- `src/components/zenbook/ZenBookApp.tsx` -- Nav-Eintrag "API" hinzufuegen
-- `src/components/zenbook/index.ts` -- Export ergaenzen
-
-### Bestehende Logik bleibt erhalten
-- Die bestehende `api_keys`-Tabelle und `generate-api-key` Edge Function bleiben bestehen (fuer Voice-Agent-API-Keys)
-- `customer_api_keys` ist ein separates, automatisch generiertes Key-System fuer Business-Kunden
-- Alle bestehenden Hooks und Komponenten werden nicht veraendert
+### Keine neuen Abhaengigkeiten
+- Framer Motion ist bereits installiert
+- Alle Animationen werden mit CSS und Framer Motion umgesetzt
 
