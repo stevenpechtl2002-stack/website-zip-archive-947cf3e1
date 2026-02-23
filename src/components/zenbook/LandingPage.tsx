@@ -101,7 +101,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
             </motion.button>
             <motion.button 
               onClick={() => onLogin('salon')}
-              className="px-8 py-4 bg-gradient-to-r from-primary to-violet-600 text-white rounded-full text-xs font-black uppercase tracking-[0.15em] shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all"
+              className="px-8 py-4 bg-gradient-to-r from-primary via-violet-500 to-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-[0.15em] shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -129,7 +129,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
 
         {/* Floating 3D Elements */}
         <motion.div 
-          className="absolute top-1/4 left-[10%] w-32 h-32 rounded-3xl bg-gradient-to-br from-primary/20 to-violet-500/20 backdrop-blur-xl border border-white/20 shadow-2xl"
+          className="absolute top-1/4 left-[10%] w-32 h-32 rounded-2xl bg-gradient-to-br from-primary/20 to-violet-500/20 backdrop-blur-xl border border-white/20 shadow-2xl"
           animate={{ 
             y: [0, -20, 0],
             rotate: [0, 5, 0],
@@ -186,7 +186,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-12 bg-white/90 backdrop-blur-2xl rounded-full shadow-2xl shadow-primary/10 border border-white/50 p-2 flex items-center gap-2 max-w-2xl mx-auto"
+            className="mt-12 bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-primary/10 border border-white/50 p-2 flex items-center gap-2 max-w-2xl mx-auto"
             whileHover={{ scale: 1.02, boxShadow: "0 30px 60px -15px rgba(99, 102, 241, 0.2)" }}
           >
             <div className="flex-1 flex items-center gap-3 px-6">
@@ -212,7 +212,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
             </div>
             <motion.button 
               onClick={() => onLogin('customer')}
-              className="px-8 py-4 bg-gradient-to-r from-primary to-violet-600 text-white rounded-full text-xs font-black uppercase tracking-[0.1em] shadow-lg"
+              className="px-8 py-4 bg-gradient-to-r from-primary via-violet-500 to-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-[0.1em] shadow-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -275,7 +275,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                   transition={{ duration: 0.3 }}
                   onClick={() => onLogin('customer')}
                 >
-                  <div className="relative rounded-3xl overflow-hidden mb-4 shadow-lg">
+                  <div className="relative rounded-2xl overflow-hidden mb-4 shadow-lg">
                     <div className="aspect-[4/3] overflow-hidden">
                       <motion.img 
                         src={salon.image} 
@@ -339,7 +339,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
           {/* Featured Category Card with Video Effect */}
           <AnimatedSection>
             <motion.div 
-              className="relative rounded-[3rem] overflow-hidden h-[70vh] group cursor-pointer"
+              className="relative rounded-2xl overflow-hidden h-[70vh] group cursor-pointer"
               whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.6 }}
             >
@@ -363,7 +363,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
 
               <div className="absolute bottom-0 left-0 p-8 lg:p-16 text-white max-w-2xl">
                 <motion.span 
-                  className="inline-block px-6 py-3 bg-gradient-to-r from-primary to-violet-600 rounded-full text-xs font-black uppercase tracking-[0.15em] mb-6 shadow-lg"
+                  className="inline-block px-6 py-3 bg-gradient-to-r from-primary via-violet-500 to-primary rounded-xl text-xs font-black uppercase tracking-[0.15em] mb-6 shadow-lg"
                   whileHover={{ scale: 1.05 }}
                 >
                   Kategorie: Friseur
@@ -379,7 +379,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
 
               {/* Floating Mini Card */}
               <motion.div 
-                className="absolute bottom-8 right-8 w-72 bg-white/10 backdrop-blur-2xl rounded-3xl p-6 border border-white/20 shadow-2xl hidden lg:block"
+                className="absolute bottom-8 right-8 w-72 bg-white/10 backdrop-blur-2xl rounded-2xl p-6 border border-white/20 shadow-2xl hidden lg:block"
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
@@ -411,7 +411,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
       <section className="py-32 px-6 lg:px-12 bg-gradient-to-b from-muted/30 to-background relative overflow-hidden">
         {/* 3D Floating Elements */}
         <motion.div 
-          className="absolute top-20 right-[10%] w-40 h-40 rounded-[2rem] bg-gradient-to-br from-primary/10 to-violet-500/10 backdrop-blur-xl border border-white/10"
+          className="absolute top-20 right-[10%] w-40 h-40 rounded-2xl bg-gradient-to-br from-primary/10 to-violet-500/10 backdrop-blur-xl border border-white/10"
           animate={{ 
             y: [0, -30, 0],
             rotate: [0, 10, 0],
@@ -448,7 +448,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                   {businessFeatures.map((feature, i) => (
                     <motion.div 
                       key={feature.title}
-                      className="flex items-center gap-3 px-5 py-3 bg-card rounded-full border border-border shadow-sm"
+                      className="flex items-center gap-3 px-5 py-3 bg-card rounded-xl border border-border shadow-sm"
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
@@ -463,7 +463,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                 <div className="mt-12 flex flex-wrap gap-4">
                   <motion.button 
                     onClick={() => onLogin('salon')}
-                    className="px-10 py-5 bg-foreground text-background rounded-full text-xs font-black uppercase tracking-[0.15em] shadow-xl hover:shadow-2xl transition-all"
+                    className="px-10 py-5 bg-foreground text-background rounded-xl text-xs font-black uppercase tracking-[0.15em] shadow-xl hover:shadow-2xl transition-all"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -471,7 +471,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                   </motion.button>
                   <motion.button 
                     onClick={onStartRegistration}
-                    className="px-10 py-5 border-2 border-border text-foreground rounded-full text-xs font-black uppercase tracking-[0.15em] hover:bg-muted transition-all"
+                    className="px-10 py-5 border-2 border-border text-foreground rounded-xl text-xs font-black uppercase tracking-[0.15em] hover:bg-muted transition-all"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -486,7 +486,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               <div className="relative">
                 {/* Main Product Card */}
                 <motion.div 
-                  className="rounded-[2.5rem] overflow-hidden shadow-2xl bg-card border border-border"
+                  className="rounded-2xl overflow-hidden shadow-2xl bg-card border border-border"
                   whileHover={{ y: -10, rotateY: 2, rotateX: -2 }}
                   transition={{ duration: 0.4 }}
                   style={{ perspective: 1000 }}
@@ -598,7 +598,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               </div>
               <span className="text-xl font-black tracking-tight text-foreground">ZenBook<span className="bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">Beauty</span></span>
             </motion.div>
-            <p className="text-sm text-muted-foreground">© 2026 ZenBook Beauty. Alle Rechte vorbehalten.</p>
+            <p className="text-sm text-muted-foreground font-medium">© 2026 ZenBook Beauty. Alle Rechte vorbehalten.</p>
             <motion.button 
               className="p-3 bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors"
               whileHover={{ scale: 1.1, rotate: 180 }}

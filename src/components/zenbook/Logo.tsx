@@ -18,12 +18,12 @@ const Logo: React.FC<LogoProps> = ({
   
   const logoContent = (
     <>
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg shadow-sm ${
+      <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-black text-lg shadow-sm ${
         variant === 'admin' 
-          ? 'bg-gradient-to-br from-primary to-violet-600 text-white'
+          ? 'bg-gradient-to-br from-primary to-violet-600 text-white shadow-lg shadow-primary/20'
           : variant === 'light'
           ? 'bg-gradient-to-br from-primary via-violet-500 to-pink-500 text-white shadow-lg shadow-primary/30'
-          : 'bg-indigo-50 border border-slate-200 text-indigo-600'
+          : 'bg-primary/10 border border-border text-primary'
       }`}>
         Z
       </div>
@@ -33,7 +33,7 @@ const Logo: React.FC<LogoProps> = ({
             ? 'text-foreground'
             : variant === 'light'
             ? 'text-2xl tracking-tight text-foreground'
-            : 'text-slate-800'
+            : 'text-foreground'
         }`}>
           ZenBook
           {variant === 'admin' && <span className="text-primary">Admin</span>}

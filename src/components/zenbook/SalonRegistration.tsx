@@ -186,7 +186,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-4xl w-full bg-card rounded-[2rem] md:rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] border border-border p-8 md:p-16 animate-in fade-in slide-in-from-bottom-8 duration-500 overflow-hidden">
+      <div className="max-w-4xl w-full bg-card rounded-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] border border-border p-8 md:p-16 animate-in fade-in slide-in-from-bottom-8 duration-500 overflow-hidden">
         
         {step === 1 && (
           <div className="space-y-10">
@@ -199,7 +199,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
                 <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Salon Name</label>
                 <input 
                   type="text" 
-                  className="w-full px-6 md:px-8 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all"
+                  className="w-full px-6 md:px-8 py-4 md:py-5 rounded-xl bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all"
                   placeholder="z.B. Hair & Soul Studio"
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
@@ -208,7 +208,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
               <div className="space-y-2">
                 <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Kategorie</label>
                 <select 
-                  className="w-full px-6 md:px-8 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all appearance-none"
+                  className="w-full px-6 md:px-8 py-4 md:py-5 rounded-xl bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all appearance-none"
                   value={formData.category}
                   onChange={e => setFormData({...formData, category: e.target.value})}
                 >
@@ -224,7 +224,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
                   <MapPin className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <input 
                     type="text" 
-                    className="w-full pl-14 md:pl-16 pr-6 md:pr-8 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all"
+                    className="w-full pl-14 md:pl-16 pr-6 md:pr-8 py-4 md:py-5 rounded-xl bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all"
                     placeholder="Straße, Hausnummer, Stadt"
                     value={formData.location}
                     onChange={e => setFormData({...formData, location: e.target.value})}
@@ -234,7 +234,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
               <div className="md:col-span-2 space-y-2">
                 <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Beschreibung</label>
                 <textarea 
-                  className="w-full px-6 md:px-8 py-5 md:py-6 rounded-[1.5rem] md:rounded-[2rem] bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all h-32 resize-none"
+                  className="w-full px-6 md:px-8 py-5 md:py-6 rounded-xl bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all h-32 resize-none"
                   placeholder="Was macht deinen Salon besonders?"
                   value={formData.description}
                   onChange={e => setFormData({...formData, description: e.target.value})}
@@ -251,13 +251,13 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
               <p className="text-muted-foreground font-medium">Bilder sind das wichtigste Verkaufsargument.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="relative group rounded-[2rem] md:rounded-[3rem] overflow-hidden aspect-video shadow-2xl border-4 border-card">
+              <div className="relative group rounded-2xl overflow-hidden aspect-video shadow-2xl border-4 border-card">
                 <img src={formData.imageUrl} className="w-full h-full object-cover" alt="Preview" />
                 <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                    <button className="p-5 bg-card rounded-full shadow-2xl"><Camera className="w-8 h-8 text-primary" /></button>
                 </div>
               </div>
-              <div className="flex flex-col justify-center p-8 md:p-10 bg-primary/10 rounded-[2rem] md:rounded-[3rem] border border-primary/20">
+              <div className="flex flex-col justify-center p-8 md:p-10 bg-primary/10 rounded-2xl border border-primary/20">
                 <Sparkles className="w-10 h-10 text-primary mb-4" />
                 <h4 className="text-xl font-black text-foreground mb-2">Tipp vom Experten</h4>
                 <p className="text-sm font-medium text-muted-foreground leading-relaxed">
@@ -269,7 +269,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
               <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Oder Bild-URL einfügen (Demo)</label>
               <input 
                 type="text" 
-                className="w-full px-6 md:px-8 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all"
+                className="w-full px-6 md:px-8 py-4 md:py-5 rounded-xl bg-muted border-2 border-transparent focus:border-primary outline-none font-bold text-foreground transition-all"
                 value={formData.imageUrl}
                 onChange={e => setFormData({...formData, imageUrl: e.target.value})}
               />
@@ -298,7 +298,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
               </div>
 
               {showAddService && (
-                <div className="p-6 md:p-8 bg-primary/5 rounded-[1.5rem] md:rounded-[2.5rem] border border-primary/10 space-y-6 animate-in slide-in-from-top-4">
+                <div className="p-6 md:p-8 bg-primary/5 rounded-xl border border-primary/10 space-y-6 animate-in slide-in-from-top-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input 
                       type="text" placeholder="Service Name (z.B. Balayage)" 
@@ -330,7 +330,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {services.map(s => (
-                  <div key={s.id} className="p-5 md:p-6 bg-muted rounded-2xl md:rounded-3xl flex justify-between items-center group hover:bg-card hover:shadow-xl border border-transparent hover:border-primary/10 transition-all">
+                  <div key={s.id} className="p-5 md:p-6 bg-muted rounded-xl flex justify-between items-center group hover:bg-card hover:shadow-xl border border-transparent hover:border-primary/10 transition-all">
                     <div>
                       <p className="font-black text-foreground">{s.name}</p>
                       <p className="text-xs font-bold text-muted-foreground">{s.duration} min • {s.price} €</p>
@@ -366,7 +366,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
               </div>
 
               {showAddStaff && (
-                <div className="p-6 md:p-8 bg-primary/5 rounded-[1.5rem] md:rounded-[2.5rem] border border-primary/10 space-y-6 animate-in slide-in-from-top-4">
+                <div className="p-6 md:p-8 bg-primary/5 rounded-xl border border-primary/10 space-y-6 animate-in slide-in-from-top-4">
                   <div className="flex flex-col md:flex-row gap-4">
                     <input 
                       type="text" placeholder="Name des Mitarbeiters" 
@@ -393,7 +393,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
 
               <div className="space-y-4">
                 {staffMembers.map((staff, idx) => (
-                  <div key={staff.id} className="p-5 md:p-6 bg-muted rounded-2xl md:rounded-3xl flex flex-col md:flex-row gap-4 md:items-center group hover:bg-card hover:shadow-xl border border-transparent hover:border-primary/10 transition-all">
+                  <div key={staff.id} className="p-5 md:p-6 bg-muted rounded-xl flex flex-col md:flex-row gap-4 md:items-center group hover:bg-card hover:shadow-xl border border-transparent hover:border-primary/10 transition-all">
                     <div 
                       className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shrink-0"
                       style={{ backgroundColor: staff.color }}
@@ -431,7 +431,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
 
         {step === 5 && (
           <div className="text-center space-y-10 py-10">
-            <div className="w-28 h-28 md:w-32 md:h-32 bg-primary/10 rounded-[2.5rem] md:rounded-[3rem] flex items-center justify-center text-primary mx-auto shadow-2xl animate-bounce">
+            <div className="w-28 h-28 md:w-32 md:h-32 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mx-auto shadow-2xl animate-bounce">
               <Check className="w-14 h-14 md:w-16 md:h-16 stroke-[3.5px]" />
             </div>
             <div className="space-y-4">
@@ -440,7 +440,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
                 Dein Salon "{formData.name || 'Mein Salon'}" ist bereit für den Launch. Wir haben {services.length} Services und {staffMembers.filter(s => s.name).length} Mitarbeiter gespeichert.
               </p>
             </div>
-            <div className="bg-muted p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] text-left border border-border">
+            <div className="bg-muted p-6 md:p-8 rounded-2xl text-left border border-border">
                <div className="flex items-center gap-4 mb-4">
                  <Users className="w-6 h-6 text-primary" />
                  <span className="font-black text-foreground">Nächster Schritt</span>
@@ -458,7 +458,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
             <button 
               onClick={prevStep}
               disabled={saving}
-              className="px-6 md:px-10 py-4 md:py-5 rounded-[1.5rem] md:rounded-[2rem] border-2 border-border text-muted-foreground font-black flex items-center gap-3 hover:bg-muted transition-all disabled:opacity-50"
+              className="px-6 md:px-10 py-4 md:py-5 rounded-xl border-2 border-border text-muted-foreground font-black flex items-center gap-3 hover:bg-muted transition-all disabled:opacity-50"
             >
               <ArrowLeft className="w-5 h-5" /> Zurück
             </button>
@@ -469,7 +469,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
           {step < 5 ? (
             <button 
               onClick={nextStep}
-              className="px-8 md:px-12 py-5 md:py-6 rounded-[1.5rem] md:rounded-[2rem] bg-foreground text-background font-black flex items-center gap-4 hover:bg-primary transition-all shadow-2xl active:scale-95 disabled:opacity-50"
+              className="px-8 md:px-12 py-5 md:py-6 rounded-xl bg-foreground text-background font-black flex items-center gap-4 hover:bg-primary transition-all shadow-2xl active:scale-95 disabled:opacity-50"
               disabled={step === 1 && !formData.name}
             >
               Weiter <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
@@ -478,7 +478,7 @@ const SalonRegistration: React.FC<Props> = ({ onComplete, onCancel }) => {
             <button 
               onClick={handleComplete}
               disabled={saving}
-              className="px-8 md:px-12 py-5 md:py-6 rounded-[1.5rem] md:rounded-[2rem] bg-primary text-primary-foreground font-black flex items-center gap-4 hover:bg-primary/90 transition-all shadow-2xl active:scale-95 disabled:opacity-50"
+              className="px-8 md:px-12 py-5 md:py-6 rounded-xl bg-primary text-primary-foreground font-black flex items-center gap-4 hover:bg-primary/90 transition-all shadow-2xl active:scale-95 disabled:opacity-50"
             >
               {saving ? (
                 <>
