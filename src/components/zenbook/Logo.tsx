@@ -35,7 +35,7 @@ const Logo: React.FC<LogoProps> = ({
             ? 'text-2xl tracking-tight text-foreground'
             : 'text-foreground'
         }`}>
-          ZenBook
+          ZenTime
           {variant === 'admin' && <span className="text-primary">Admin</span>}
           {variant === 'light' && (
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Beauty</span>
