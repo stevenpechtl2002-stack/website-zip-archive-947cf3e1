@@ -9,3 +9,4 @@ export { default as Settings } from './Settings';
 export { default as CustomerPortal } from './CustomerPortal';
 export { default as SalonRegistration } from './SalonRegistration';
 export { default as Logo } from './Logo';
+export { default as ApiSettings } from './ApiSettings';

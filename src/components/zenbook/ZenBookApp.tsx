@@ -17,7 +17,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Wand2,
-  Loader2
+  Loader2,
+  Key
 } from 'lucide-react';
 import { 
   format, 
@@ -46,6 +47,7 @@ import {
   SalonRegistration 
 } from '@/components/zenbook';
 import { AdminDashboard } from '@/components/zenbook/AdminDashboard';
+import ApiSettings from '@/components/zenbook/ApiSettings';
 import StaffCalendarView from '@/components/zenbook/StaffCalendarView';
 import Logo from '@/components/zenbook/Logo';
 import { useAuth } from '@/hooks/useAuth';
@@ -62,6 +64,7 @@ const navItems = [
   { id: 'services', label: 'Services', icon: <Briefcase className="w-5 h-5" /> },
   { id: 'staff', label: 'Team', icon: <Users className="w-5 h-5" /> },
   { id: 'insights', label: 'KI Insights', icon: <PieChart className="w-5 h-5" /> },
+  { id: 'api', label: 'API', icon: <Key className="w-5 h-5" /> },
   { id: 'settings', label: 'Einstellungen', icon: <SettingsIcon className="w-5 h-5" /> },
 ];
 
@@ -402,6 +405,7 @@ const ZenBookApp: React.FC = () => {
             }
           }} />}
           {currentView === 'insights' && <Insights appointments={appointments} services={services} staff={staffMembers} />}
+          {currentView === 'api' && <ApiSettings />}
           {currentView === 'settings' && <SettingsComponent onSimulateIncoming={handleIncomingWebhook} />}
         </div>
       </main>
