@@ -91,7 +91,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
           >
             <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-center gap-3 relative">
               <Sparkles className="w-4 h-4" />
-              <span className="text-xs font-bold tracking-wide">ZenTime Rewards — Sammle Punkte bei jeder Buchung!</span>
+              <span className="text-xs font-bold tracking-wide">Ready for your glow? — Entdecke dein Wohlbefinden</span>
               <button onClick={() => setShowPromoBanner(false)} className="absolute right-4 p-1 hover:bg-white/20 rounded transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -194,7 +194,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-6"
             >
-              Dein Beauty-Erlebnis wartet
+              READY FOR YOUR GLOW?
             </motion.p>
             
             <motion.h1 
@@ -203,9 +203,9 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="text-4xl md:text-6xl lg:text-7xl font-black leading-[0.95] tracking-tight mb-6"
             >
-              Überspring den Stress.{' '}
+              Alles für dein{' '}
                <span className="text-accent">
-                 Buch das Treatment.
+                 Wohlbefinden.
                </span>
             </motion.h1>
 
@@ -215,7 +215,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-lg text-muted-foreground font-medium mb-10 max-w-lg"
             >
-              Finde und buche die besten Friseure, Kosmetiker und Wellness-Anbieter in deiner Nähe.
+              Über 5.000 verifizierte Salons. Einfach buchen, entspannt genießen.
             </motion.p>
 
             {/* Search Card */}
@@ -226,12 +226,12 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               className="bg-card/95 backdrop-blur-2xl rounded-2xl shadow-2xl shadow-primary/5 border border-border/50 p-4"
               whileHover={{ boxShadow: "0 30px 60px -15px hsl(195 80% 28% / 0.15)" }}
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/50 border border-border/50">
                   <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   <input 
                     type="text"
-                    placeholder="Behandlung oder Salon"
+                    placeholder="Welche Behandlung?"
                     value={searchTreatment}
                     onChange={(e) => setSearchTreatment(e.target.value)}
                     className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-sm font-medium"
@@ -241,30 +241,20 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                   <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   <input 
                     type="text"
-                    placeholder="PLZ oder Gebiet"
+                    placeholder="In welcher Stadt?"
                     value={searchLocation}
                     onChange={(e) => setSearchLocation(e.target.value)}
-                    className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-sm font-medium"
-                  />
-                </div>
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/50 border border-border/50">
-                  <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  <input 
-                    type="text"
-                    placeholder="Beliebiges Datum"
-                    value={searchDate}
-                    onChange={(e) => setSearchDate(e.target.value)}
                     className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-sm font-medium"
                   />
                 </div>
               </div>
               <motion.button 
                 onClick={() => onLogin('customer')}
-                className="w-full mt-3 px-6 py-3.5 bg-accent text-accent-foreground rounded-xl text-sm font-black shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 transition-all"
+                className="w-full mt-3 px-6 py-3.5 bg-primary text-primary-foreground rounded-xl text-sm font-black uppercase tracking-wider shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.97 }}
               >
-                Auf ZenTime finden
+                Suchen
               </motion.button>
             </motion.div>
           </div>
@@ -379,8 +369,8 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
         <div className="max-w-7xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">Einfach schöner buchen</h2>
-              <p className="text-muted-foreground font-medium max-w-lg mx-auto">Warum über 2 Millionen Menschen ZenTime vertrauen.</p>
+              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">Warum ZenTime?</h2>
+              <p className="text-muted-foreground font-medium max-w-lg mx-auto">Dein Wohlbefinden verdient das Beste.</p>
             </div>
           </AnimatedSection>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -484,12 +474,12 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-6">Für Geschäftspartner</p>
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[0.95] tracking-tight">
-                  <span className="text-primary">Sie haben</span>
-                  <br />einen Salon?<br />
-                  <span className="text-foreground">Bringen Sie ihn online.</span>
+                  <span className="text-primary">Wachstum</span>
+                  <br />als{' '}
+                  <span className="text-foreground">Standard.</span>
                 </h2>
                 <p className="mt-8 text-lg text-muted-foreground font-medium leading-relaxed max-w-lg">
-                  Die leistungsstärkste Suite für moderne Salons. Mehr Kunden, weniger Aufwand.
+                  Die leistungsstärkste Suite für moderne Salons. Präsentiere deine Produkte und Services.
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -512,11 +502,11 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                 <div className="mt-10 flex flex-wrap gap-4">
                   <motion.button 
                     onClick={onStartRegistration}
-                    className="px-8 py-4 bg-accent text-accent-foreground rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-accent/20"
+                    className="px-8 py-4 bg-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-primary/20"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Jetzt Partner werden
+                    Jetzt starten
                   </motion.button>
                   <motion.button 
                     onClick={() => onLogin('salon')}
@@ -524,7 +514,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Business Login
+                    Demo anfordern
                   </motion.button>
                 </div>
               </div>
