@@ -1,49 +1,40 @@
 
 
-# Fix: Arbeitszeiten (Staff Shifts) konfigurierbar machen
+# Standard-Arbeitszeiten einfuegen (Daten-Insert)
 
-## Das Problem
+## Status
 
-Die `get-available-slots` Funktion gibt leere Slots zurueck, weil **keine Arbeitszeiten** (`staff_shifts`) in der Datenbank hinterlegt sind. Ohne Schichten weiss das System nicht, wann Mitarbeiter verfuegbar sind, und meldet daher "keine freien Termine".
+Die `staff_shifts`-Tabelle hat aktuell **0 Eintraege**. Alle 9 aktiven Mitarbeiter haben keine Schichten hinterlegt. Deshalb gibt `get-available-slots` weiterhin leere Ergebnisse zurueck.
 
-## Die Loesung
+## Was jetzt passiert
 
-### Schritt 1: Standard-Arbeitszeiten automatisch anlegen
+Ein SQL-Insert wird ausgefuehrt, der fuer **alle 9 aktiven Mitarbeiter** Standard-Schichten anlegt:
 
-Fuer alle 9 aktiven Mitarbeiter werden Standard-Schichten erstellt (Montag-Samstag, 09:00-18:00), damit sofort Slots verfuegbar sind.
+- **Tage**: Montag bis Samstag (day_of_week 1-6)
+- **Zeiten**: 09:00 - 18:00
+- **Status**: is_working = true
+- **Sonntag**: bleibt frei (kein Eintrag)
 
-Dies wird per SQL-Insert in die `staff_shifts`-Tabelle gemacht:
-- Tage 1-6 (Montag bis Samstag)
-- Startzeit: 09:00
-- Endzeit: 18:00
-- `is_working: true`
-- Sonntag (0) bleibt frei
+Das ergibt **54 neue Eintraege** (9 Mitarbeiter x 6 Tage).
 
-### Schritt 2: Sicherstellen, dass die StaffManagement-UI Schichten verwalten kann
+## Ergebnis nach dem Fix
 
-Pruefen und sicherstellen, dass die bestehende Staff-Management-Oberflaeche im Dashboard die Moeglichkeit bietet, Arbeitszeiten pro Mitarbeiter zu bearbeiten. Falls die UI das nicht abdeckt, wird sie erweitert.
+- `get-available-slots` liefert Slots von 09:00 bis 18:00 im 30-Minuten-Takt
+- n8n-Abfragen funktionieren korrekt
+- Arbeitszeiten koennen spaeter ueber das Dashboard angepasst werden
 
 ## Technische Details
 
-### Datenbank-Aenderung (kein Schema-Change, nur Daten)
-
-Insert von Standard-Schichten fuer alle aktiven Mitarbeiter:
+### Datenbank (nur Daten-Insert, kein Schema-Change)
 
 ```text
-Fuer jeden der 9 Mitarbeiter:
-  Fuer jeden Wochentag 1-6 (Mo-Sa):
-    INSERT INTO staff_shifts (staff_member_id, day_of_week, start_time, end_time, is_working)
-    VALUES (<staff_id>, <day>, '09:00', '18:00', true)
+INSERT INTO staff_shifts (staff_member_id, day_of_week, start_time, end_time, is_working)
+SELECT id, day, '09:00', '18:00', true
+FROM staff_members, generate_series(1, 6) AS day
+WHERE is_active = true
 ```
 
-### Dateien die geprueft/angepasst werden
+### Keine Datei-Aenderungen noetig
 
-| Datei | Aenderung |
-|---|---|
-| Datenbank (`staff_shifts`) | Standard-Schichten fuer alle Mitarbeiter einfuegen |
-| `src/components/zenbook/StaffManagement.tsx` | Pruefen ob Schicht-Verwaltung vorhanden ist |
-| `src/components/zenbook/StaffCalendarView.tsx` | Pruefen ob Arbeitszeiten korrekt angezeigt werden |
+Der bestehende Code (Edge Function `get-available-slots` und Hook `useStaffShifts`) ist bereits korrekt implementiert. Es fehlen nur die Daten in der Tabelle.
 
-### Ergebnis
-
-Nach dem Fix wird `get-available-slots` fuer jeden Wochentag (Mo-Sa) Slots von 09:00 bis 18:00 im 30-Minuten-Takt zurueckgeben. Die Arbeitszeiten koennen dann ueber das Dashboard angepasst werden.
