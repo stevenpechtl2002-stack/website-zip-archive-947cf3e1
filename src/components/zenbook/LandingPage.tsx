@@ -365,7 +365,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
       </section>
 
       {/* 6. USP Section */}
-      <section className="py-20 px-6 lg:px-12 bg-muted/30">
+      <section className="py-20 px-6 lg:px-12 bg-primary-foreground">
         <div className="max-w-7xl mx-auto">
           <AnimatedSection>
             <div className="text-center mb-14">
