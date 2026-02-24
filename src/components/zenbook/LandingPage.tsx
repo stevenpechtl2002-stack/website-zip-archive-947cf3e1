@@ -262,7 +262,7 @@ const LandingPage: React.FC<Props> = ({ onLogin, onStartRegistration }) => {
       </motion.section>
 
       {/* 4. Treatment Categories - Horizontal Scroll */}
-      <section className="lg:px-12 px-[24px] rounded-none shadow-sm mx-0 py-0">
+      <section className="lg:px-12 px-[24px] rounded-none shadow-sm mx-0 py-[40px]">
         <div className="max-w-7xl mx-auto">
           <AnimatedSection>
             <h2 className="text-2xl md:text-3xl font-black text-foreground mb-8">Beliebte Behandlungen</h2>
