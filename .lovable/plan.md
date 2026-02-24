@@ -1,68 +1,49 @@
 
 
-# Landing Page: Exakte Anpassung an zentime.io
+# Fix: Arbeitszeiten (Staff Shifts) konfigurierbar machen
 
-## Zusammenfassung
+## Das Problem
 
-Die Landing Page wird farblich und inhaltlich exakt an www.zentime.io angepasst. Das bedeutet ein Purple/Violet-Farbschema (statt Neon-Tuerkis/Pink) und alle Texte/Slogans werden 1:1 von zentime.io uebernommen. Treatwell-Formulierungen werden komplett entfernt.
+Die `get-available-slots` Funktion gibt leere Slots zurueck, weil **keine Arbeitszeiten** (`staff_shifts`) in der Datenbank hinterlegt sind. Ohne Schichten weiss das System nicht, wann Mitarbeiter verfuegbar sind, und meldet daher "keine freien Termine".
 
----
+## Die Loesung
 
-## Farbschema-Aenderung (zurueck zu Purple/Violet wie zentime.io)
+### Schritt 1: Standard-Arbeitszeiten automatisch anlegen
 
-| Element | Aktuell (Neon) | Neu (zentime.io) |
-|---|---|---|
-| Primary | Tuerkis `168 85% 45%` | Indigo/Violet `252 80% 60%` |
-| Accent | Neon-Pink `340 90% 55%` | Pink/Magenta `330 85% 60%` |
-| Hintergrund | Warmgrau `30 20% 97%` | Reines Weiss/Hellgrau `240 20% 98%` |
-| Zen-Neon | Tuerkis | Violet `252 80% 60%` |
-| Zen-Pink | Pink 340 | Magenta-Pink `330 85% 60%` |
-| Zen-Emerald | bleibt Mint `160 60% 45%` | bleibt (fuer Schwebeelemente) |
-| Glow-Pulse Animationen | Tuerkis/Pink Glow | Violet/Pink Glow |
+Fuer alle 9 aktiven Mitarbeiter werden Standard-Schichten erstellt (Montag-Samstag, 09:00-18:00), damit sofort Slots verfuegbar sind.
 
----
+Dies wird per SQL-Insert in die `staff_shifts`-Tabelle gemacht:
+- Tage 1-6 (Montag bis Samstag)
+- Startzeit: 09:00
+- Endzeit: 18:00
+- `is_working: true`
+- Sonntag (0) bleibt frei
 
-## Text-/Slogan-Aenderungen (zentime.io-Original)
+### Schritt 2: Sicherstellen, dass die StaffManagement-UI Schichten verwalten kann
 
-| Bereich | Aktuell (Treatwell-inspiriert) | Neu (zentime.io) |
-|---|---|---|
-| Promo Banner | "ZenTime Rewards - Sammle Punkte..." | "Ready for your glow? - Entdecke dein Wohlbefinden" |
-| Hero Tagline | "Dein Beauty-Erlebnis wartet" | "READY FOR YOUR GLOW?" |
-| Hero Headline | "Ueberspring den Stress. Buch das Treatment." | "Alles fuer dein Wohlbefinden." |
-| Hero Subtext | "Finde und buche die besten Friseure..." | "Ueber 5.000 verifizierte Salons. Einfach buchen, entspannt geniessen." |
-| CTA Button | "Auf ZenTime finden" | "Suchen" |
-| Salons Headline | "Die besten Salons in deiner Naehe" | "Die besten Salons in deiner Naehe" (bleibt) |
-| USP Headline | "Einfach schoener buchen" | Entfernen oder umformulieren zu "Warum ZenTime?" |
-| USP Sub | "Warum ueber 2 Millionen Menschen ZenTime vertrauen" | anpassen |
-| Inspiration | "Bereit fuer eine Veraenderung?" | "Bereit fuer eine Veraenderung?" (bleibt, ist von zentime.io) |
-| Inspiration Sub | "Exzellenz in jedem Schnitt." | "Exzellenz in jedem Schnitt." (bleibt) |
-| Business Headline | "Sie haben einen Salon? Bringen Sie ihn online." | "Wachstum als Standard." |
-| Business Sub | "Die leistungsstaerkste Suite..." | "Die leistungsstaerkste Suite fuer moderne Salons. Praesentiere deine Produkte und Services." |
-| Business CTA | "Jetzt Partner werden" | "Jetzt starten" + "Demo anfordern" |
-| Footer Brand | "ZenTime Beauty" | "ZenTime Beauty" (bleibt) |
-
----
-
-## Suchformular-Aenderung
-
-zentime.io hat nur **2 Suchfelder** (nicht 3):
-- "Welche Behandlung?" (mit Such-Icon)
-- "In welcher Stadt?" (mit MapPin-Icon)
-- Button: "SUCHEN" (purple/primary)
-
-Das dritte Feld "Beliebiges Datum" wird entfernt.
-
----
+Pruefen und sicherstellen, dass die bestehende Staff-Management-Oberflaeche im Dashboard die Moeglichkeit bietet, Arbeitszeiten pro Mitarbeiter zu bearbeiten. Falls die UI das nicht abdeckt, wird sie erweitert.
 
 ## Technische Details
 
-### Geaenderte Dateien
+### Datenbank-Aenderung (kein Schema-Change, nur Daten)
+
+Insert von Standard-Schichten fuer alle aktiven Mitarbeiter:
+
+```text
+Fuer jeden der 9 Mitarbeiter:
+  Fuer jeden Wochentag 1-6 (Mo-Sa):
+    INSERT INTO staff_shifts (staff_member_id, day_of_week, start_time, end_time, is_working)
+    VALUES (<staff_id>, <day>, '09:00', '18:00', true)
+```
+
+### Dateien die geprueft/angepasst werden
 
 | Datei | Aenderung |
 |---|---|
-| `src/index.css` | Alle CSS-Variablen: Primary zu Violet `252 80% 60%`, Accent zu Pink `330 85% 60%`, Hintergrund heller, Glow-Animationen auf Violet/Pink, zen-neon und zen-pink Variablen anpassen |
-| `src/components/zenbook/LandingPage.tsx` | Alle Texte/Slogans ersetzen, Suchformular auf 2 Felder reduzieren, CTA-Texte aendern, Business-Section umformulieren |
-| `src/components/zenbook/Logo.tsx` | Farbanpassung an neues Purple-Schema (Logo-Icon Gradient von Violet zu Pink) |
+| Datenbank (`staff_shifts`) | Standard-Schichten fuer alle Mitarbeiter einfuegen |
+| `src/components/zenbook/StaffManagement.tsx` | Pruefen ob Schicht-Verwaltung vorhanden ist |
+| `src/components/zenbook/StaffCalendarView.tsx` | Pruefen ob Arbeitszeiten korrekt angezeigt werden |
 
-### Keine neuen Abhaengigkeiten
+### Ergebnis
 
+Nach dem Fix wird `get-available-slots` fuer jeden Wochentag (Mo-Sa) Slots von 09:00 bis 18:00 im 30-Minuten-Takt zurueckgeben. Die Arbeitszeiten koennen dann ueber das Dashboard angepasst werden.
